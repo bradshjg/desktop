@@ -1,6 +1,5 @@
 import { GitProcess } from 'dugite'
 import * as GitPerf from '../../ui/lib/git-perf'
-import { isErrnoException } from '../errno-exception'
 
 type ProcessOutput = {
   /** The contents of stdout received from the spawned process */
@@ -35,84 +34,13 @@ export function spawnAndComplete(
   return GitPerf.measure(
     commandName,
     () =>
-      new Promise<ProcessOutput>((resolve, reject) => {
-        const process = GitProcess.spawn(args, path)
-
-        process.on('error', err => {
-          // If this is an exception thrown by Node.js while attempting to
-          // spawn let's keep the salient details but include the name of
-          // the operation.
-          if (isErrnoException(err)) {
-            reject(new Error(`Failed to execute ${name}: ${err.code}`))
-          } else {
-            // for unhandled errors raised by the process, let's surface this in the
-            // promise and make the caller handle it
-            reject(err)
-          }
-        })
-
-        let totalStdoutLength = 0
-        let killSignalSent = false
-
-        const stdoutChunks = new Array<Buffer>()
-
-        // If Node.js encounters a synchronous runtime error while spawning
-        // `stdout` will be undefined and the error will be emitted asynchronously
-        if (process.stdout) {
-          process.stdout.on('data', (chunk: Buffer) => {
-            if (!stdOutMaxLength || totalStdoutLength < stdOutMaxLength) {
-              stdoutChunks.push(chunk)
-              totalStdoutLength += chunk.length
-            }
-
-            if (
-              stdOutMaxLength &&
-              totalStdoutLength >= stdOutMaxLength &&
-              !killSignalSent
-            ) {
-              process.kill()
-              killSignalSent = true
-            }
+      new Promise<ProcessOutput>((resolve, _) => {
+        GitProcess.exec(args, path).then((result) => {
+          resolve({
+            output: Buffer.from(result.stdout),
+            error: Buffer.from(result.stderr),
+            exitCode: result.exitCode
           })
-        }
-
-        const stderrChunks = new Array<Buffer>()
-
-        // See comment above about stdout and asynchronous errors.
-        if (process.stderr) {
-          process.stderr.on('data', (chunk: Buffer) => {
-            stderrChunks.push(chunk)
-          })
-        }
-
-        process.on('close', (code, signal) => {
-          const stdout = Buffer.concat(
-            stdoutChunks,
-            stdOutMaxLength
-              ? Math.min(stdOutMaxLength, totalStdoutLength)
-              : totalStdoutLength
-          )
-
-          const stderr = Buffer.concat(stderrChunks)
-
-          // mimic the experience of GitProcess.exec for handling known codes when
-          // the process terminates
-          const exitCodes = successExitCodes || new Set([0])
-
-          if (exitCodes.has(code) || signal) {
-            resolve({
-              output: stdout,
-              error: stderr,
-              exitCode: code,
-            })
-            return
-          } else {
-            reject(
-              new Error(
-                `Git returned an unexpected exit code '${code}' which should be handled by the caller.'`
-              )
-            )
-          }
         })
       })
   )

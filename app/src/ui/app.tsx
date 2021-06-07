@@ -66,7 +66,7 @@ import { Merge } from './merge-branch'
 import { RepositorySettings } from './repository-settings'
 import { AppError } from './app-error'
 import { MissingRepository } from './missing-repository'
-import { AddExistingRepository, CreateRepository } from './add-repository'
+import { AddExistingRepository, AddCodespaceRepository, CreateRepository } from './add-repository'
 import { CloneRepository } from './clone-repository'
 import { CreateBranch } from './create-branch'
 import { SignIn } from './sign-in'
@@ -325,7 +325,9 @@ export class App extends React.Component<IAppProps, IAppState> {
     this.props.dispatcher.reportStats()
     setInterval(() => this.props.dispatcher.reportStats(), SendStatsInterval)
 
-    this.props.dispatcher.installGlobalLFSFilters(false)
+    const selectedRepository = this.props.appStore.getSelectedRepository()
+
+    this.props.dispatcher.installGlobalLFSFilters(false, selectedRepository?.codespace)
 
     setInterval(() => this.checkForUpdates(true), UpdateCheckInterval)
     this.checkForUpdates(true)
@@ -1498,6 +1500,15 @@ export class App extends React.Component<IAppProps, IAppState> {
             path={popup.path}
           />
         )
+      case PopupType.AddCodespaceRepository:
+        return (
+          <AddCodespaceRepository
+            key="add-codespace-repository"
+            onDismissed={onPopupDismissedFn}
+            dispatcher={this.props.dispatcher}
+            path={popup.path}
+          />
+        )
       case PopupType.CreateRepository:
         return (
           <CreateRepository
@@ -2293,7 +2304,8 @@ export class App extends React.Component<IAppProps, IAppState> {
   }
 
   private updateExistingLFSFilters = () => {
-    this.props.dispatcher.installGlobalLFSFilters(true)
+    const selectedRepository = this.props.appStore.getSelectedRepository()
+    this.props.dispatcher.installGlobalLFSFilters(true, selectedRepository?.codespace)
   }
 
   private initializeLFS = (repositories: ReadonlyArray<Repository>) => {

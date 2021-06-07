@@ -35,7 +35,8 @@ export async function merge(
     'merge',
     {
       expectedErrors: new Set([GitError.MergeConflicts]),
-    }
+    },
+    repository.codespace
   )
 
   if (exitCode !== 0) {
@@ -69,7 +70,8 @@ export async function getMergeBase(
       // - 128 is returned if a ref cannot be found
       //   "warning: ignoring broken ref refs/remotes/origin/main."
       successExitCodes: new Set([0, 1, 128]),
-    }
+    },
+    repository.codespace
   )
 
   if (process.exitCode === 1 || process.exitCode === 128) {
@@ -104,7 +106,10 @@ export async function mergeTree(
   const result = await spawnAndComplete(
     ['merge-tree', mergeBase, ours.tip.sha, theirs.tip.sha],
     repository.path,
-    'mergeTree'
+    'mergeTree',
+    undefined,
+    undefined,
+    repository.codespace
   )
 
   const output = result.output.toString()
@@ -123,7 +128,7 @@ export async function mergeTree(
  * @param repository where to abort the merge
  */
 export async function abortMerge(repository: Repository): Promise<void> {
-  await git(['merge', '--abort'], repository.path, 'abortMerge')
+  await git(['merge', '--abort'], repository.path, 'abortMerge', {}, repository.codespace)
 }
 
 /**

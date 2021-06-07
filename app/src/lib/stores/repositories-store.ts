@@ -135,7 +135,8 @@ export class RepositoriesStore extends TypedBaseStore<
       repo.missing,
       enableRepositoryAliases() ? repo.alias : null,
       repo.workflowPreferences,
-      repo.isTutorialRepository
+      repo.isTutorialRepository,
+      repo.codespace
     )
   }
 
@@ -213,7 +214,7 @@ export class RepositoriesStore extends TypedBaseStore<
    *
    * If a repository already exists with that path, it will be returned instead.
    */
-  public async addRepository(path: string): Promise<Repository> {
+  public async addRepository(path: string, codespace=false): Promise<Repository> {
     const repository = await this.db.transaction(
       'rw',
       this.db.repositories,
@@ -232,6 +233,7 @@ export class RepositoriesStore extends TypedBaseStore<
           missing: false,
           lastStashCheckDate: null,
           alias: null,
+          codespace: true
         }
         const id = await this.db.repositories.add(dbRepo)
         return this.toRepository({ id, ...dbRepo })

@@ -89,6 +89,8 @@ export async function missingRepositoryHandler(
   error: Error,
   dispatcher: Dispatcher
 ): Promise<Error | null> {
+  log.error(error.message)
+
   const e = asErrorWithMetadata(error)
   if (!e) {
     return error

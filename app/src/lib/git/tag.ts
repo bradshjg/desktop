@@ -18,7 +18,7 @@ export async function createTag(
 ): Promise<void> {
   const args = ['tag', '-a', '-m', '', name, targetCommitSha]
 
-  await git(args, repository.path, 'createTag')
+  await git(args, repository.path, 'createTag', {}, repository.codespace)
 }
 
 /**
@@ -33,7 +33,7 @@ export async function deleteTag(
 ): Promise<void> {
   const args = ['tag', '-d', name]
 
-  await git(args, repository.path, 'deleteTag')
+  await git(args, repository.path, 'deleteTag', {}, repository.codespace)
 }
 
 /**
@@ -48,7 +48,8 @@ export async function getAllTags(
 
   const tags = await git(args, repository.path, 'getAllTags', {
     successExitCodes: new Set([0, 1]), // when there are no tags, git exits with 1.
-  })
+  },
+  repository.codespace)
 
   const tagsArray: Array<[string, string]> = tags.stdout
     .split('\n')
@@ -110,7 +111,8 @@ export async function fetchTagsToPush(
       return git(args, repository.path, 'fetchTagsToPush', {
         env,
         successExitCodes: new Set([0, 1, 128]),
-      })
+      },
+      repository.codespace)
     }
   )
 

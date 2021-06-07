@@ -52,7 +52,8 @@ export async function getSymbolicRef(
       //  - 128 is the generic error code that Git returns when it can't find
       //    something
       successExitCodes: new Set([0, 1, 128]),
-    }
+    },
+    repository.codespace
   )
 
   if (result.exitCode === 1 || result.exitCode === 128) {

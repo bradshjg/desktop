@@ -103,7 +103,8 @@ export async function getCommits(
   )
   const result = await git(args, repository.path, 'getCommits', {
     successExitCodes: new Set([0, 128]),
-  })
+  },
+  repository.codespace)
 
   // if the repository has an unborn HEAD, return an empty history of commits
   if (result.exitCode === 128) {
@@ -154,7 +155,7 @@ export async function getChangedFiles(
     '-z',
     '--',
   ]
-  const result = await git(args, repository.path, 'getChangedFiles')
+  const result = await git(args, repository.path, 'getChangedFiles', {}, repository.codespace)
 
   return parseChangedFiles(result.stdout, sha)
 }

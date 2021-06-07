@@ -118,7 +118,7 @@ export async function getFileContents(
       : Promise.resolve(null)
 
   const newContentsPromise =
-    enableTextDiffExpansion() || lineFilters.newLineFilter.length
+    !repo.codespace && (enableTextDiffExpansion() || lineFilters.newLineFilter.length)
       ? getNewFileContent(repo, file)
       : Promise.resolve(null)
 

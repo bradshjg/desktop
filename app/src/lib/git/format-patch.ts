@@ -19,7 +19,10 @@ export async function formatPatch(
   const { output } = await spawnAndComplete(
     ['format-patch', '--unified=1', '--minimal', '--stdout', range],
     repository.path,
-    'formatPatch'
+    'formatPatch',
+    undefined,
+    undefined,
+    repository.codespace
   )
   return output.toString('utf8')
 }

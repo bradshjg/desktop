@@ -28,6 +28,7 @@ export enum PopupType {
   MergeBranch,
   RepositorySettings,
   AddRepository,
+  AddCodespaceRepository,
   CreateRepository,
   CloneRepository,
   CreateBranch,
@@ -116,6 +117,7 @@ export type Popup =
       initialSelectedTab?: RepositorySettingsTab
     }
   | { type: PopupType.AddRepository; path?: string }
+  | { type: PopupType.AddCodespaceRepository; path?: string }
   | { type: PopupType.CreateRepository; path?: string }
   | {
       type: PopupType.CloneRepository

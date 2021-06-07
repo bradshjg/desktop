@@ -1044,6 +1044,10 @@ export class StatsStore implements IStatsStore {
     createLocalStorageTimestamp(FirstRepositoryAddedAtKey)
   }
 
+  public recordAddCodespaceRepository() {
+    createLocalStorageTimestamp(FirstRepositoryAddedAtKey)
+  }
+
   public recordCloneRepository() {
     createLocalStorageTimestamp(FirstRepositoryClonedAtKey)
   }

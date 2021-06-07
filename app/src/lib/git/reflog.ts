@@ -28,7 +28,8 @@ export async function getRecentBranches(
     ],
     repository.path,
     'getRecentBranches',
-    { successExitCodes: new Set([0, 128]) }
+    { successExitCodes: new Set([0, 128]) },
+    repository.codespace
   )
 
   if (result.exitCode === 128) {
@@ -96,7 +97,8 @@ export async function getBranchCheckouts(
     ],
     repository.path,
     'getCheckoutsAfterDate',
-    { successExitCodes: new Set([0, 128]) }
+    { successExitCodes: new Set([0, 128]) },
+    repository.codespace
   )
 
   const checkouts = new Map<string, Date>()

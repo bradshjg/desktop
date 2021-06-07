@@ -57,7 +57,8 @@ export async function revertCommit(
       return git(args, repository.path, 'revert', {
         ...opts,
         env: merge(opts.env, env),
-      })
+      },
+      repository.codespace)
     }
   )
 }

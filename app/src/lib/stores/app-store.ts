@@ -683,6 +683,10 @@ export class AppStore extends TypedBaseStore<IAppState> {
       })
   }
 
+  public getSelectedRepository(): Repository | CloningRepository | null {
+    return this.selectedRepository
+  }
+
   protected emitUpdate() {
     // If the window is hidden then we won't get an animation frame, but there
     // may still be work we wanna do in response to the state change. So
@@ -2722,8 +2726,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
     }
 
     const foundRepository =
-      (await pathExists(repository.path)) &&
-      (await isGitRepository(repository.path)) &&
+      (await pathExists(repository.path) || repository.codespace) &&
+      (await isGitRepository(repository.path, repository.codespace)) &&
       (await this._loadStatus(repository)) !== null
 
     if (foundRepository) {
@@ -2740,7 +2744,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
     // if the repository path doesn't exist on disk,
     // set the flag and don't try anything Git-related
-    const exists = await pathExists(repository.path)
+    const exists = await pathExists(repository.path) || repository.codespace
     if (!exists) {
       this._updateRepositoryMissing(repository, true)
       return
@@ -2859,7 +2863,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       return
     }
 
-    const exists = await pathExists(repository.path)
+    const exists = await pathExists(repository.path) || repository.codespace
     if (!exists) {
       lookup.delete(repository.id)
       return
@@ -2922,9 +2926,10 @@ export class AppStore extends TypedBaseStore<IAppState> {
       const isBackgroundTask = true
       const gitStore = this.gitStoreCache.get(repo)
 
+      const progressCallback = repo.codespace? undefined : (progress: IFetchProgress) => { this.updatePushPullFetchProgress(repo, progress) }
+
       await this.withPushPullFetch(repo, () =>
-        gitStore.fetch(account, isBackgroundTask, progress =>
-          this.updatePushPullFetchProgress(repo, progress)
+        gitStore.fetch(account, isBackgroundTask, progressCallback
         )
       )
       this.updatePushPullFetchProgress(repo, null)
@@ -4010,7 +4015,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
       await fastForwardBranches(repository, eligibleBranches)
     } catch (e) {
-      log.error('Branch fast-forwarding failed', e)
+      log.error(`Branch fast-forwarding failed for ${repository.path} using codespace? ${repository.codespace}`, e)
       sendNonFatalException('fastForwardBranches', e)
     }
   }
@@ -4229,7 +4234,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
         const refreshWeight = 0.1
         const isBackgroundTask = fetchType === FetchType.BackgroundTask
 
-        const progressCallback = (progress: IFetchProgress) => {
+        const progressCallback = repository.codespace ? undefined : (progress: IFetchProgress) => {
           this.updatePushPullFetchProgress(repository, {
             ...progress,
             value: progress.value * fetchWeight,
@@ -5008,14 +5013,15 @@ export class AppStore extends TypedBaseStore<IAppState> {
   }
 
   public async _addRepositories(
-    paths: ReadonlyArray<string>
+    paths: ReadonlyArray<string>,
+    codespace = false
   ): Promise<ReadonlyArray<Repository>> {
     const addedRepositories = new Array<Repository>()
     const lfsRepositories = new Array<Repository>()
     const invalidPaths = new Array<string>()
 
     for (const path of paths) {
-      const validatedPath = await validatedRepositoryPath(path)
+      const validatedPath = codespace ? path : await validatedRepositoryPath(path)
       if (validatedPath) {
         log.info(`[AppStore] adding repository at ${validatedPath} to store`)
 
@@ -5030,7 +5036,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
         }
 
         const addedRepo = await this.repositoriesStore.addRepository(
-          validatedPath
+          validatedPath,
+          codespace
         )
 
         // initialize the remotes for this new repository to ensure it can fetch
@@ -5238,9 +5245,9 @@ export class AppStore extends TypedBaseStore<IAppState> {
     })
   }
 
-  public async _installGlobalLFSFilters(force: boolean): Promise<void> {
+  public async _installGlobalLFSFilters(force: boolean, remote = false): Promise<void> {
     try {
-      await installGlobalLFSFilters(force)
+      await installGlobalLFSFilters(force, remote)
     } catch (error) {
       this.emitError(error)
     }

@@ -41,7 +41,7 @@ export async function getBlobContents(
     processCallback: setBinaryEncoding,
   }
 
-  const blobContents = await git(args, repository.path, 'getBlobContents', opts)
+  const blobContents = await git(args, repository.path, 'getBlobContents', opts, repository.codespace)
 
   return Buffer.from(blobContents.stdout, 'binary')
 }
@@ -83,7 +83,8 @@ export async function getPartialBlobContents(
     repository.path,
     'getPartialBlobContents',
     successExitCodes,
-    length
+    length,
+    repository.codespace
   )
 
   return output

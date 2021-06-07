@@ -32,6 +32,7 @@ export async function checkoutIndex(
     'checkoutIndex',
     {
       stdin: paths.join('\0'),
-    }
+    },
+    repository.codespace
   )
 }

@@ -28,7 +28,9 @@ export async function applyPatchToIndex(
     await git(
       ['add', '--u', '--', file.status.oldPath],
       repository.path,
-      'applyPatchToIndex'
+      'applyPatchToIndex',
+      {},
+      repository.codespace
     )
 
     // Figure out the blob oid of the removed file
@@ -36,7 +38,9 @@ export async function applyPatchToIndex(
     const oldFile = await git(
       ['ls-tree', 'HEAD', '--', file.status.oldPath],
       repository.path,
-      'applyPatchToIndex'
+      'applyPatchToIndex',
+      {},
+      repository.codespace
     )
 
     const [info] = oldFile.stdout.split('\t', 1)
@@ -46,7 +50,9 @@ export async function applyPatchToIndex(
     await git(
       ['update-index', '--add', '--cacheinfo', mode, oid, file.path],
       repository.path,
-      'applyPatchToIndex'
+      'applyPatchToIndex',
+      {},
+      repository.codespace
     )
   }
 
@@ -78,7 +84,7 @@ export async function applyPatchToIndex(
   }
 
   const patch = await formatPatch(file, diff)
-  await git(applyArgs, repository.path, 'applyPatchToIndex', { stdin: patch })
+  await git(applyArgs, repository.path, 'applyPatchToIndex', { stdin: patch }, repository.codespace)
 
   return Promise.resolve()
 }
@@ -146,7 +152,5 @@ export async function discardChangesFromSelection(
 
   const args = ['apply', '--unidiff-zero', '--whitespace=nowarn', '-']
 
-  await git(args, repository.path, 'discardChangesFromSelection', {
-    stdin: patch,
-  })
+  await git(args, repository.path, 'discardChangesFromSelection', { stdin: patch}, repository.codespace)
 }

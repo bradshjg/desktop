@@ -26,7 +26,8 @@ export async function getAuthorIdentity(
     'getAuthorIdentity',
     {
       successExitCodes: new Set([0, 128]),
-    }
+    },
+    repository.codespace
   )
 
   // If user.user.useconfigonly is set and no user.name or user.email

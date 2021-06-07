@@ -12,7 +12,8 @@ import { RepositoryDoesNotExistErrorCode } from 'dugite'
  * @returns null if the path provided doesn't reside within a Git repository.
  */
 export async function getTopLevelWorkingDirectory(
-  path: string
+  path: string,
+  remote = false
 ): Promise<string | null> {
   let result
 
@@ -26,7 +27,8 @@ export async function getTopLevelWorkingDirectory(
       'getTopLevelWorkingDirectory',
       {
         successExitCodes: new Set([0, 128]),
-      }
+      },
+      remote
     )
   } catch (err) {
     if (err.code === RepositoryDoesNotExistErrorCode) {
@@ -59,12 +61,14 @@ export async function getTopLevelWorkingDirectory(
  *
  * @returns true if the path contains a bare Git repository. Returns false if it is not bare or is not a Git repository.
  */
-export async function isBareRepository(path: string): Promise<boolean> {
+export async function isBareRepository(path: string, remote = false): Promise<boolean> {
   try {
     const result = await git(
       ['rev-parse', '--is-bare-repository'],
       path,
-      'isBareRepository'
+      'isBareRepository',
+      {},
+      remote
     )
     return result.stdout.trim() === 'true'
   } catch (e) {
@@ -77,6 +81,6 @@ export async function isBareRepository(path: string): Promise<boolean> {
 }
 
 /** Is the path a git repository? */
-export async function isGitRepository(path: string): Promise<boolean> {
-  return (await getTopLevelWorkingDirectory(path)) !== null
+export async function isGitRepository(path: string, remote = false): Promise<boolean> {
+  return (await getTopLevelWorkingDirectory(path, remote)) !== null
 }

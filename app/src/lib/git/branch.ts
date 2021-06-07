@@ -35,7 +35,7 @@ export async function createBranch(
     args.push('--no-track')
   }
 
-  await git(args, repository.path, 'createBranch')
+  await git(args, repository.path, 'createBranch', {}, repository.codespace)
 }
 
 /** Rename the given branch to a new name. */
@@ -47,7 +47,9 @@ export async function renameBranch(
   await git(
     ['branch', '-m', branch.nameWithoutRemote, newName],
     repository.path,
-    'renameBranch'
+    'renameBranch',
+    {},
+    repository.codespace
   )
 }
 
@@ -58,7 +60,7 @@ export async function deleteLocalBranch(
   repository: Repository,
   branchName: string
 ): Promise<true> {
-  await git(['branch', '-D', branchName], repository.path, 'deleteLocalBranch')
+  await git(['branch', '-D', branchName], repository.path, 'deleteLocalBranch', {}, repository.codespace)
   return true
 }
 
@@ -97,7 +99,8 @@ export async function deleteRemoteBranch(
         expectedErrors: new Set<DugiteError>([
           DugiteError.BranchDeletionFailed,
         ]),
-      })
+      },
+      repository.codespace)
     }
   )
 
@@ -139,7 +142,8 @@ export async function getBranchesPointedAt(
       // - 129 is returned if ref is malformed
       //   "warning: ignoring broken ref refs/remotes/origin/main."
       successExitCodes: new Set([0, 1, 129]),
-    }
+    },
+    repository.codespace
   )
   if (exitCode === 1 || exitCode === 129) {
     return null
@@ -167,7 +171,7 @@ export async function getMergedBranches(
 
   const args = ['branch', ...formatArgs, '--merged', branchName]
   const mergedBranches = new Map<string, string>()
-  const { stdout } = await git(args, repository.path, 'mergedBranches')
+  const { stdout } = await git(args, repository.path, 'mergedBranches', {}, repository.codespace)
 
   for (const branch of parse(stdout)) {
     // Don't include the branch we're using to compare against

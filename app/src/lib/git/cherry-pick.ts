@@ -174,7 +174,8 @@ export async function cherryPick(
     ],
     repository.path,
     'cherry-pick',
-    baseOptions
+    baseOptions,
+    repository.codespace
   )
 
   return parseCherryPickResult(result)
@@ -458,7 +459,8 @@ export async function continueCherryPick(
       ['commit', '--allow-empty'],
       repository.path,
       'continueCherryPickSkipCurrentCommit',
-      options
+      options,
+      repository.codespace
     )
 
     return parseCherryPickResult(result)
@@ -472,7 +474,8 @@ export async function continueCherryPick(
     ['cherry-pick', '--continue', '--keep-redundant-commits'],
     repository.path,
     'continueCherryPick',
-    options
+    options,
+    repository.codespace
   )
 
   return parseCherryPickResult(result)
@@ -480,7 +483,7 @@ export async function continueCherryPick(
 
 /** Abandon the current cherry pick operation */
 export async function abortCherryPick(repository: Repository) {
-  await git(['cherry-pick', '--abort'], repository.path, 'abortCherryPick')
+  await git(['cherry-pick', '--abort'], repository.path, 'abortCherryPick', {}, repository.codespace)
 }
 
 /**

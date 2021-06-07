@@ -5,6 +5,7 @@ let CloningRepositoryID = 1
 /** A repository which is currently being cloned. */
 export class CloningRepository {
   public readonly id = CloningRepositoryID++
+  public readonly codespace = false
 
   public constructor(
     public readonly path: string,

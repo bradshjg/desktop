@@ -303,6 +303,10 @@ export class RepositoriesList extends React.Component<
           : 'Add existing repository…',
         action: this.onAddExistingRepository,
       },
+      {
+        label: 'Add Codespace Repository...',
+        action: this.onAddCodespaceRepository,
+      },
     ]
 
     showContextualMenu(items)
@@ -317,6 +321,10 @@ export class RepositoriesList extends React.Component<
 
   private onAddExistingRepository = () => {
     this.props.dispatcher.showPopup({ type: PopupType.AddRepository })
+  }
+
+  private onAddCodespaceRepository = () => {
+    this.props.dispatcher.showPopup({ type: PopupType.AddCodespaceRepository })
   }
 
   private onCreateNewRepository = () => {

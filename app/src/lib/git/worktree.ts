@@ -17,7 +17,9 @@ export async function listWorkTrees(
   const result = await git(
     ['worktree', 'list', '--porcelain'],
     repository.path,
-    'listWorkTrees'
+    'listWorkTrees',
+    {},
+    repository.codespace
   )
 
   const worktrees = new Array<LinkedWorkTree>()
@@ -54,7 +56,9 @@ export async function createTemporaryWorkTree(
   await git(
     ['worktree', 'add', '-f', workTreePath, commit],
     repository.path,
-    'addWorkTree'
+    'addWorkTree',
+    {},
+    repository.codespace
   )
   // Because Git doesn't give enough information from stdout for the previous
   // Git call, this function enumerates the available worktrees to find the
@@ -83,7 +87,9 @@ export async function destroyWorkTree(
   await git(
     ['worktree', 'remove', '-f', workTree.path],
     repository.path,
-    'removeWorkTree'
+    'removeWorkTree',
+    {},
+    repository.codespace
   )
   return true
 }

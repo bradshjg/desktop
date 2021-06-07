@@ -8,7 +8,8 @@ import { getCaptures } from '../helpers/regex'
  * @returns filepaths with their number of conflicted markers
  */
 export async function getFilesWithConflictMarkers(
-  repositoryPath: string
+  repositoryPath: string,
+  remote = false
 ): Promise<Map<string, number>> {
   // git operation
   const args = ['diff', '--check']
@@ -16,7 +17,9 @@ export async function getFilesWithConflictMarkers(
     args,
     repositoryPath,
     'getFilesWithConflictMarkers',
-    new Set([0, 2])
+    new Set([0, 2]),
+    undefined,
+    remote
   )
 
   // result parsing

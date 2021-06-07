@@ -44,7 +44,7 @@ export async function reset(
   ref: string
 ): Promise<true> {
   const args = resetModeToArgs(mode, ref)
-  await git(args, repository.path, 'reset')
+  await git(args, repository.path, 'reset', {}, repository.codespace)
   return true
 }
 
@@ -87,15 +87,16 @@ export async function resetPaths(
     const args = [...baseArgs, '--stdin', '-z', '--']
     await git(args, repository.path, 'resetPaths', {
       stdin: paths.join('\0'),
-    })
+    },
+    repository.codespace)
   } else {
     const args = [...baseArgs, '--', ...paths]
-    await git(args, repository.path, 'resetPaths')
+    await git(args, repository.path, 'resetPaths', {}, repository.codespace)
   }
 }
 
 /** Unstage all paths. */
 export async function unstageAll(repository: Repository): Promise<true> {
-  await git(['reset', '--', '.'], repository.path, 'unstageAll')
+  await git(['reset', '--', '.'], repository.path, 'unstageAll', {}, repository.codespace)
   return true
 }

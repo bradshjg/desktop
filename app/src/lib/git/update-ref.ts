@@ -22,7 +22,9 @@ export async function updateRef(
   await git(
     ['update-ref', ref, newValue, oldValue, '-m', reason],
     repository.path,
-    'updateRef'
+    'updateRef',
+    {},
+    repository.codespace
   )
 }
 
@@ -46,5 +48,5 @@ export async function deleteRef(
     args.push('-m', reason)
   }
 
-  await git(args, repository.path, 'deleteRef')
+  await git(args, repository.path, 'deleteRef', {}, repository.codespace)
 }

@@ -16,7 +16,9 @@ export async function unstageAllFiles(repository: Repository): Promise<void> {
     //          which will block this
     ['rm', '--cached', '-r', '-f', '.'],
     repository.path,
-    'unstageAllFiles'
+    'unstageAllFiles',
+    {},
+    repository.codespace
   )
 }
 
@@ -27,5 +29,5 @@ export async function removeConflictedFile(
   repository: Repository,
   file: WorkingDirectoryFileChange
 ) {
-  await git(['rm', '--', file.path], repository.path, 'removeConflictedFile')
+  await git(['rm', '--', file.path], repository.path, 'removeConflictedFile', {}, repository.codespace)
 }

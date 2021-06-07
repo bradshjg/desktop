@@ -107,7 +107,8 @@ export async function checkoutBranch(
       return git(args, repository.path, 'checkoutBranch', {
         ...opts,
         env: merge(opts.env, env),
-      })
+      },
+      repository.codespace)
     }
   )
 
@@ -124,7 +125,9 @@ export async function checkoutPaths(
   await git(
     ['checkout', 'HEAD', '--', ...paths],
     repository.path,
-    'checkoutPaths'
+    'checkoutPaths',
+    {},
+    repository.codespace
   )
 }
 
@@ -140,6 +143,8 @@ export async function checkoutConflictedFile(
   await git(
     ['checkout', `--${resolution}`, '--', file.path],
     repository.path,
-    'checkoutConflictedFile'
+    'checkoutConflictedFile',
+    {},
+    repository.codespace
   )
 }

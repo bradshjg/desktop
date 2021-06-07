@@ -111,7 +111,8 @@ export async function pull(
       return git(args, repository.path, 'pull', {
         ...opts,
         env: merge(opts.env, env),
-      })
+      },
+      repository.codespace)
     }
   )
 

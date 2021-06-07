@@ -2,13 +2,13 @@ import { git } from './core'
 import { Repository } from '../../models/repository'
 
 /** Install the global LFS filters. */
-export async function installGlobalLFSFilters(force: boolean): Promise<void> {
+export async function installGlobalLFSFilters(force: boolean, remote = false): Promise<void> {
   const args = ['lfs', 'install', '--skip-repo']
   if (force) {
     args.push('--force')
   }
 
-  await git(args, __dirname, 'installGlobalLFSFilter')
+  await git(args, __dirname, 'installGlobalLFSFilter', {}, remote)
 }
 
 /** Install LFS hooks in the repository. */
@@ -21,7 +21,7 @@ export async function installLFSHooks(
     args.push('--force')
   }
 
-  await git(args, repository.path, 'installLFSHooks')
+  await git(args, repository.path, 'installLFSHooks', {}, repository.codespace)
 }
 
 /** Is the repository configured to track any paths with LFS? */
@@ -31,7 +31,8 @@ export async function isUsingLFS(repository: Repository): Promise<boolean> {
   }
   const result = await git(['lfs', 'track'], repository.path, 'isUsingLFS', {
     env,
-  })
+  },
+  repository.codespace)
   return result.stdout.length > 0
 }
 
@@ -51,7 +52,9 @@ export async function isTrackedByLFS(
   const { stdout } = await git(
     ['check-attr', 'filter', path],
     repository.path,
-    'checkAttrForLFS'
+    'checkAttrForLFS',
+    {},
+    repository.codespace
   )
 
   // "git check-attr -a" will output every filter it can find in .gitattributes

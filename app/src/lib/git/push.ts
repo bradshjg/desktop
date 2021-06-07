@@ -127,7 +127,8 @@ export async function push(
       return git(args, repository.path, 'push', {
         ...opts,
         env: merge(opts.env, env),
-      })
+      },
+      repository.codespace)
     }
   )
 

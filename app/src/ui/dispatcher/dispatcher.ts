@@ -152,9 +152,10 @@ export class Dispatcher {
    * this will post an error to that affect.
    */
   public addRepositories(
-    paths: ReadonlyArray<string>
+    paths: ReadonlyArray<string>,
+    codespace = false
   ): Promise<ReadonlyArray<Repository>> {
-    return this.appStore._addRepositories(paths)
+    return this.appStore._addRepositories(paths, codespace)
   }
 
   /**
@@ -1987,8 +1988,8 @@ export class Dispatcher {
   }
 
   /** Install the global Git LFS filters. */
-  public installGlobalLFSFilters(force: boolean): Promise<void> {
-    return this.appStore._installGlobalLFSFilters(force)
+  public installGlobalLFSFilters(force: boolean, remote = false): Promise<void> {
+    return this.appStore._installGlobalLFSFilters(force, remote)
   }
 
   /** Install the LFS filters */
@@ -2281,6 +2282,10 @@ export class Dispatcher {
 
   public recordAddExistingRepository() {
     this.statsStore.recordAddExistingRepository()
+  }
+
+  public recordAddCodespaceRepository() {
+    this.statsStore.recordAddCodespaceRepository()
   }
 
   /**

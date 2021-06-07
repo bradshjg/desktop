@@ -129,7 +129,8 @@ export async function git(
   args: string[],
   path: string,
   name: string,
-  options?: IGitExecutionOptions
+  options?: IGitExecutionOptions,
+  remote_exec = false
 ): Promise<IGitResult> {
   const defaultOptions: IGitExecutionOptions = {
     successExitCodes: new Set([0]),
@@ -163,7 +164,7 @@ export async function git(
   const commandName = `${name}: git ${args.join(' ')}`
 
   const result = await GitPerf.measure(commandName, () =>
-    GitProcess.exec(args, path, opts)
+    GitProcess.exec(args, path, opts, remote_exec)
   ).catch(err => {
     // If this is an exception thrown by Node.js (as opposed to
     // dugite) let's keep the salient details but include the name of

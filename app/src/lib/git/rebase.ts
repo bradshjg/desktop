@@ -390,7 +390,8 @@ export async function rebase(
     [...gitRebaseArguments(), 'rebase', baseBranch.name, targetBranch.name],
     repository.path,
     'rebase',
-    options
+    options,
+    repository.codespace
   )
 
   return parseRebaseResult(result)
@@ -398,7 +399,7 @@ export async function rebase(
 
 /** Abandon the current rebase operation */
 export async function abortRebase(repository: Repository) {
-  await git(['rebase', '--abort'], repository.path, 'abortRebase')
+  await git(['rebase', '--abort'], repository.path, 'abortRebase', {}, repository.codespace)
 }
 
 function parseRebaseResult(result: IGitResult): RebaseResult {
@@ -506,7 +507,8 @@ export async function continueRebase(
       ['rebase', '--skip'],
       repository.path,
       'continueRebaseSkipCurrentCommit',
-      options
+      options,
+      repository.codespace
     )
 
     return parseRebaseResult(result)
@@ -516,7 +518,8 @@ export async function continueRebase(
     ['rebase', '--continue'],
     repository.path,
     'continueRebase',
-    options
+    options,
+    repository.codespace
   )
 
   return parseRebaseResult(result)
@@ -582,7 +585,8 @@ export async function rebaseInteractive(
     ],
     repository.path,
     action,
-    options
+    options,
+    repository.codespace
   )
 
   return parseRebaseResult(result)

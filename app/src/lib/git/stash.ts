@@ -51,7 +51,8 @@ export async function getStashes(repository: Repository): Promise<StashResult> {
     'getStashEntries',
     {
       successExitCodes: new Set([0, 128]),
-    }
+    },
+    repository.codespace
   )
 
   // There's no refs/stashes reflog in the repository or it's not
@@ -135,7 +136,8 @@ export async function createDesktopStashEntry(
 
   const result = await git(args, repository.path, 'createStashEntry', {
     successExitCodes: new Set<number>([0, 1]),
-  })
+  },
+  repository.codespace)
 
   if (result.exitCode === 1) {
     // search for any line starting with `error:` -  /m here to ensure this is
@@ -182,7 +184,7 @@ export async function dropDesktopStashEntry(
 
   if (entryToDelete !== null) {
     const args = ['stash', 'drop', entryToDelete.name]
-    await git(args, repository.path, 'dropStashEntry')
+    await git(args, repository.path, 'dropStashEntry', {}, repository.codespace)
   }
 }
 
@@ -208,7 +210,8 @@ export async function popStashEntry(
     const result = await git(args, repository.path, 'popStashEntry', {
       expectedErrors,
       successExitCodes,
-    })
+    },
+    repository.codespace)
 
     // popping a stashes that create conflicts in the working directory
     // report an exit code of `1` and are not dropped after being applied.
@@ -283,7 +286,8 @@ async function getChangedFilesWithinStash(repository: Repository, sha: string) {
     // because there weren't any untracked files,
     // and that's okay!
     successExitCodes: new Set([0, 128]),
-  })
+  },
+  repository.codespace)
   if (result.exitCode === 0 && result.stdout.length > 0) {
     return parseChangedFiles(result.stdout, sha)
   }

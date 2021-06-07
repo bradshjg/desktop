@@ -177,8 +177,12 @@ export async function getStatus(
     args,
     repository.path,
     'getStatus',
-    new Set([0, 128])
+    new Set([0, 128]),
+    undefined,
+    repository.codespace
   )
+
+  log.info('status is checking up on us')
 
   if (result.exitCode === 128) {
     log.debug(
@@ -234,6 +238,8 @@ export async function getStatus(
   const workingDirectory = WorkingDirectoryStatus.fromFiles([...files.values()])
 
   const isCherryPickingHeadFound = await isCherryPickHeadFound(repository)
+
+  log.info('status says we still exist')
 
   return {
     currentBranch,
@@ -341,7 +347,8 @@ function parseStatusHeader(results: IStatusHeadersData, header: IStatusHeader) {
 
 async function getMergeConflictDetails(repository: Repository) {
   const conflictCountsByPath = await getFilesWithConflictMarkers(
-    repository.path
+    repository.path,
+    repository.codespace
   )
   const binaryFilePaths = await getBinaryPaths(repository, 'MERGE_HEAD')
   return {
@@ -352,7 +359,8 @@ async function getMergeConflictDetails(repository: Repository) {
 
 async function getRebaseConflictDetails(repository: Repository) {
   const conflictCountsByPath = await getFilesWithConflictMarkers(
-    repository.path
+    repository.path,
+    repository.codespace
   )
   const binaryFilePaths = await getBinaryPaths(repository, 'REBASE_HEAD')
   return {
@@ -367,7 +375,8 @@ async function getRebaseConflictDetails(repository: Repository) {
  */
 async function getWorkingDirectoryConflictDetails(repository: Repository) {
   const conflictCountsByPath = await getFilesWithConflictMarkers(
-    repository.path
+    repository.path,
+    repository.codespace
   )
   let binaryFilePaths: ReadonlyArray<string> = []
   try {

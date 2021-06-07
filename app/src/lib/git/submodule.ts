@@ -27,7 +27,8 @@ export async function listSubmodules(
     'listSubmodules',
     {
       successExitCodes: new Set([0, 128]),
-    }
+    },
+    repository.codespace
   )
 
   if (result.exitCode === 128) {
@@ -87,6 +88,8 @@ export async function resetSubmodulePaths(
   await git(
     ['submodule', 'update', '--recursive', '--force', '--', ...paths],
     repository.path,
-    'updateSubmodule'
+    'updateSubmodule',
+    {},
+    repository.codespace
   )
 }

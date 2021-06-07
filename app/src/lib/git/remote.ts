@@ -12,7 +12,8 @@ export async function getRemotes(
 ): Promise<ReadonlyArray<IRemote>> {
   const result = await git(['remote', '-v'], repository.path, 'getRemotes', {
     expectedErrors: new Set([GitError.NotAGitRepository]),
-  })
+  },
+  repository.codespace)
 
   if (result.gitError === GitError.NotAGitRepository) {
     return []
@@ -34,7 +35,7 @@ export async function addRemote(
   name: string,
   url: string
 ): Promise<IRemote> {
-  await git(['remote', 'add', name, url], repository.path, 'addRemote')
+  await git(['remote', 'add', name, url], repository.path, 'addRemote', {}, repository.codespace)
 
   return { url, name }
 }
@@ -52,7 +53,8 @@ export async function removeRemote(
     ['remote', 'remove', name],
     repository.path,
     'removeRemote',
-    options
+    options,
+    repository.codespace
   )
 }
 
@@ -62,7 +64,7 @@ export async function setRemoteURL(
   name: string,
   url: string
 ): Promise<true> {
-  await git(['remote', 'set-url', name, url], repository.path, 'setRemoteURL')
+  await git(['remote', 'set-url', name, url], repository.path, 'setRemoteURL', {}, repository.codespace)
   return true
 }
 
@@ -79,7 +81,8 @@ export async function getRemoteURL(
     ['remote', 'get-url', name],
     repository.path,
     'getRemoteURL',
-    { successExitCodes: new Set([0, 128]) }
+    { successExitCodes: new Set([0, 128]) },
+    repository.codespace
   )
 
   if (result.exitCode !== 0) {

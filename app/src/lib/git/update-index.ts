@@ -95,7 +95,8 @@ async function updateIndex(
 
   await git(args, repository.path, 'updateIndex', {
     stdin: paths.join('\0'),
-  })
+  },
+  repository.codespace)
 }
 
 /**

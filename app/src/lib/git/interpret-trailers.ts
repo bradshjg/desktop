@@ -107,7 +107,8 @@ export async function parseTrailers(
     'parseTrailers',
     {
       stdin: commitMessage,
-    }
+    },
+    repository.codespace
   )
 
   const trailers = result.stdout
@@ -167,7 +168,8 @@ export async function mergeTrailers(
 
   const result = await git(args, repository.path, 'mergeTrailers', {
     stdin: commitMessage,
-  })
+  },
+  repository.codespace)
 
   return result.stdout
 }

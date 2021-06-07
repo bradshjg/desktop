@@ -18,7 +18,7 @@ async function getFetchArgs(
   const networkArguments = await gitNetworkArguments(repository, account)
 
   if (enableRecurseSubmodulesFlag()) {
-    return progressCallback != null
+    return progressCallback
       ? [
           ...networkArguments,
           'fetch',
@@ -35,7 +35,7 @@ async function getFetchArgs(
           remote,
         ]
   } else {
-    return progressCallback != null
+    return progressCallback
       ? [...networkArguments, 'fetch', '--progress', '--prune', remote]
       : [...networkArguments, 'fetch', '--prune', remote]
   }
@@ -113,7 +113,8 @@ export async function fetch(
     return git(args, repository.path, 'fetch', {
       ...opts,
       env: merge(opts.env, env),
-    })
+    },
+    repository.codespace)
   })
 }
 
@@ -136,7 +137,8 @@ export async function fetchRefspec(
     return git(args, repository.path, 'fetchRefspec', {
       ...options,
       env,
-    })
+    },
+    repository.codespace)
   })
 }
 
@@ -178,6 +180,7 @@ export async function fastForwardBranches(
     ],
     repository.path,
     'fastForwardBranches',
-    opts
+    opts,
+    repository.codespace
   )
 }

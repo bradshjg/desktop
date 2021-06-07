@@ -15,7 +15,8 @@ export function getConfigValue(
   name: string,
   onlyLocal: boolean = false
 ): Promise<string | null> {
-  return getConfigValueInPath(name, repository.path, onlyLocal)
+  log.info(`getConfigValue: ${name} codespace?: ${repository.codespace}`)
+  return getConfigValueInPath(name, repository.path, onlyLocal, undefined, undefined, repository.codespace)
 }
 
 /** Look up a global config value by name. */
@@ -23,9 +24,10 @@ export function getGlobalConfigValue(
   name: string,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<string | null> {
-  return getConfigValueInPath(name, null, false, undefined, env)
+  return getConfigValueInPath(name, null, false, undefined, env, remote)
 }
 
 /**
@@ -39,9 +41,10 @@ export async function getGlobalBooleanConfigValue(
   name: string,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<boolean | null> {
-  const value = await getConfigValueInPath(name, null, false, 'bool', env)
+  const value = await getConfigValueInPath(name, null, false, 'bool', env, remote)
   return value === null ? null : value !== 'false'
 }
 
@@ -67,7 +70,8 @@ async function getConfigValueInPath(
   type?: 'bool' | 'int' | 'bool-or-int' | 'path' | 'expiry-date' | 'color',
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<string | null> {
   const flags = ['config', '-z']
   if (!path) {
@@ -84,8 +88,9 @@ async function getConfigValueInPath(
 
   const result = await git(flags, path || __dirname, 'getConfigValueInPath', {
     successExitCodes: new Set([0, 1]),
-    env,
-  })
+    env
+  },
+  remote)
 
   // Git exits with 1 if the value isn't found. That's OK.
   if (result.exitCode === 1) {
@@ -100,13 +105,14 @@ async function getConfigValueInPath(
 /** Get the path to the global git config. */
 export async function getGlobalConfigPath(env?: {
   HOME: string
-}): Promise<string | null> {
+}, remote = false): Promise<string | null> {
   const options = env ? { env } : undefined
   const result = await git(
     ['config', '--global', '--list', '--show-origin', '--name-only', '-z'],
     __dirname,
     'getGlobalConfigPath',
-    options
+    options,
+    remote
   )
   const segments = result.stdout.split('\0')
   if (segments.length < 1) {
@@ -133,9 +139,10 @@ export async function setConfigValue(
   value: string,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<void> {
-  return setConfigValueInPath(name, value, repository.path, env)
+  return setConfigValueInPath(name, value, repository.path, env, remote)
 }
 
 /** Set the global config value by name. */
@@ -144,9 +151,10 @@ export async function setGlobalConfigValue(
   value: string,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<void> {
-  return setConfigValueInPath(name, value, null, env)
+  return setConfigValueInPath(name, value, null, env, remote)
 }
 
 /**
@@ -163,7 +171,8 @@ async function setConfigValueInPath(
   path: string | null,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<void> {
   const options = env ? { env } : undefined
 
@@ -175,7 +184,7 @@ async function setConfigValueInPath(
 
   flags.push('--replace-all', name, value)
 
-  await git(flags, path || __dirname, 'setConfigValueInPath', options)
+  await git(flags, path || __dirname, 'setConfigValueInPath', options, remote)
 }
 
 /** Remove the local config value by name. */
@@ -184,9 +193,10 @@ export async function removeConfigValue(
   name: string,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<void> {
-  return removeConfigValueInPath(name, repository.path, env)
+  return removeConfigValueInPath(name, repository.path, env, remote)
 }
 
 /** Remove the global config value by name. */
@@ -194,9 +204,10 @@ export async function removeGlobalConfigValue(
   name: string,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<void> {
-  return removeConfigValueInPath(name, null, env)
+  return removeConfigValueInPath(name, null, env, remote)
 }
 
 /**
@@ -212,7 +223,8 @@ async function removeConfigValueInPath(
   path: string | null,
   env?: {
     HOME: string
-  }
+  },
+  remote = false
 ): Promise<void> {
   const options = env ? { env } : undefined
 
@@ -224,5 +236,5 @@ async function removeConfigValueInPath(
 
   flags.push('--unset-all', name)
 
-  await git(flags, path || __dirname, 'removeConfigValueInPath', options)
+  await git(flags, path || __dirname, 'removeConfigValueInPath', options, remote)
 }

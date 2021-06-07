@@ -35,7 +35,8 @@ export async function getBranches(
     ['for-each-ref', ...formatArgs, ...prefixes],
     repository.path,
     'getBranches',
-    { expectedErrors: new Set([GitError.NotAGitRepository]) }
+    { expectedErrors: new Set([GitError.NotAGitRepository]) },
+    repository.codespace
   )
 
   if (result.gitError === GitError.NotAGitRepository) {
@@ -91,7 +92,8 @@ export async function getBranchesDifferingFromUpstream(
     ['for-each-ref', ...formatArgs, ...prefixes],
     repository.path,
     'getBranchesDifferingFromUpstream',
-    { expectedErrors: new Set([GitError.NotAGitRepository]) }
+    { expectedErrors: new Set([GitError.NotAGitRepository]) },
+    repository.codespace
   )
 
   if (result.gitError === GitError.NotAGitRepository) {

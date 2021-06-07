@@ -61,7 +61,8 @@ export async function getAheadBehind(
   const args = ['rev-list', '--left-right', '--count', range, '--']
   const result = await git(args, repository.path, 'getAheadBehind', {
     expectedErrors: new Set([GitError.BadRevision]),
-  })
+  },
+  repository.codespace)
 
   // This means one of the refs (most likely the upstream branch) no longer
   // exists. In that case we can't be ahead/behind at all.
@@ -154,7 +155,7 @@ export async function getCommitsInRange(
     expectedErrors: new Set<GitError>([GitError.BadRevision]),
   }
 
-  const result = await git(args, repository.path, 'getCommitsInRange', options)
+  const result = await git(args, repository.path, 'getCommitsInRange', options, repository.codespace)
 
   if (result.gitError === GitError.BadRevision) {
     return null

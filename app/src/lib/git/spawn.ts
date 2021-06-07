@@ -28,14 +28,15 @@ export function spawnAndComplete(
   path: string,
   name: string,
   successExitCodes?: Set<number>,
-  stdOutMaxLength?: number
+  stdOutMaxLength?: number,
+  remote = false
 ): Promise<ProcessOutput> {
   const commandName = `${name}: git ${args.join(' ')}`
   return GitPerf.measure(
     commandName,
     () =>
       new Promise<ProcessOutput>((resolve, _) => {
-        GitProcess.exec(args, path).then((result) => {
+        GitProcess.exec(args, path, {}, remote).then((result: any) => {
           resolve({
             output: Buffer.from(result.stdout),
             error: Buffer.from(result.stderr),

@@ -29,7 +29,8 @@ export async function createCommit(
     'createCommit',
     {
       stdin: message,
-    }
+    },
+    repository.codespace
   )
   return parseCommitSHA(result)
 }
@@ -93,7 +94,9 @@ export async function createMergeCommit(
       '--cleanup=strip',
     ],
     repository.path,
-    'createMergeCommit'
+    'createMergeCommit',
+    {},
+    repository.codespace
   )
   return parseCommitSHA(result)
 }

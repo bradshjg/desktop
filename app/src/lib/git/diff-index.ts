@@ -87,7 +87,8 @@ export async function getIndexChanges(
     'getIndexChanges',
     {
       successExitCodes: new Set([0, 128]),
-    }
+    },
+    repository.codespace
   )
 
   // 128 from diff-index either means that the path isn't a repository or (more
@@ -97,7 +98,9 @@ export async function getIndexChanges(
     result = await git(
       [...args, NullTreeSHA],
       repository.path,
-      'getIndexChanges'
+      'getIndexChanges',
+      {},
+      repository.codespace
     )
   }
 

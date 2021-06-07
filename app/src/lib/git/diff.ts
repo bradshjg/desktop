@@ -126,7 +126,10 @@ export async function getCommitDiff(
   const { output } = await spawnAndComplete(
     args,
     repository.path,
-    'getCommitDiff'
+    'getCommitDiff',
+    undefined,
+    undefined,
+    repository.codespace
   )
 
   return buildDiff(output, repository, file, commitish)
@@ -187,7 +190,9 @@ export async function getWorkingDirectoryDiff(
     args,
     repository.path,
     'getWorkingDirectoryDiff',
-    successExitCodes
+    successExitCodes,
+    undefined,
+    repository.codespace
   )
   const lineEndingsChange = parseLineEndingsWarning(error)
 
@@ -454,7 +459,10 @@ export async function getBinaryPaths(
   const { output } = await spawnAndComplete(
     ['diff', '--numstat', '-z', ref],
     repository.path,
-    'getBinaryPaths'
+    'getBinaryPaths',
+    undefined,
+    undefined,
+    repository.codespace
   )
   const captures = getCaptures(output.toString('utf8'), binaryListRegex)
   if (captures.length === 0) {

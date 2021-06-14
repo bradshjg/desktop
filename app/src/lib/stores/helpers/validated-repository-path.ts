@@ -8,8 +8,14 @@ export async function validatedRepositoryPath(
   path: string
 ): Promise<string | null> {
   try {
+    const virtual = new URL(path)
+    if (virtual.protocol === 'virtual:') { return path }
+  } catch (e) {}
+
+  try {
     return await getTopLevelWorkingDirectory(path)
   } catch (e) {
+
     return null
   }
 }

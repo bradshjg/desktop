@@ -1,5 +1,5 @@
 
-import { IGitExecutionOptions, IGitResult } from 'dugite'
+import { IGitExecutionOptions, IGitResult } from '../../git/core'
 import { remoteExecFile, IVirtualExecOptions } from '../network/client'
 
 /**
@@ -19,8 +19,9 @@ export function exec(args: string[], path: string, options?: IGitExecutionOption
     // definition for execFile currently infers based on the encoding parameter
     // which could change between declaration time and being passed to execFile.
     // See https://git.io/vixyQ
+    const url = new URL(path)
     const execOptions: IVirtualExecOptions = {
-      cwd: path,
+      cwd: url.pathname,
       encoding: 'utf8',
       maxBuffer: options?.maxBuffer || 10 * 1024 * 1024,
       env: process.env
@@ -36,7 +37,7 @@ export function exec(args: string[], path: string, options?: IGitExecutionOption
       stderr: string
     ) {
         if (!err) {
-          resolve({ stdout, stderr, exitCode: 0 })
+          resolve({ stdout, stderr, exitCode: 0, gitError: null, gitErrorDescription: null, combinedOutput: stdout + stderr, path: url.pathname })
         } else {
           reject(err)
         }

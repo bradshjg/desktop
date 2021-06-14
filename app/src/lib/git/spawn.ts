@@ -1,6 +1,8 @@
 import { GitProcess } from 'dugite'
 import * as GitPerf from '../../ui/lib/git-perf'
+import { exec as virtualExec } from '../virtual/git/core'
 import { isErrnoException } from '../errno-exception'
+import { IGitResult } from '../git/core'
 
 type ProcessOutput = {
   /** The contents of stdout received from the spawned process */
@@ -31,6 +33,17 @@ export function spawnAndComplete(
   successExitCodes?: Set<number>,
   stdOutMaxLength?: number
 ): Promise<ProcessOutput> {
+  if (path.startsWith('virtual:')) {
+    return new Promise<ProcessOutput>((resolve, _) => {
+      virtualExec(args, path, {}).then((result: IGitResult) => {
+        resolve({
+          output: Buffer.from(result.stdout),
+          error: Buffer.from(result.stderr),
+          exitCode: result.exitCode
+        })
+      })
+    })
+  }
   const commandName = `${name}: git ${args.join(' ')}`
   return GitPerf.measure(
     commandName,

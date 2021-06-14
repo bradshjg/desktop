@@ -359,6 +359,8 @@ export class App extends React.Component<IAppProps, IAppState> {
         return this.chooseRepository()
       case 'add-local-repository':
         return this.showAddLocalRepo()
+      case 'add-virtual-repository':
+        return this.showAddVirtualRepo()
       case 'create-branch':
         return this.showCreateBranch()
       case 'show-branches':

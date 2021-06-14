@@ -135,6 +135,7 @@ const allMenuIds: ReadonlyArray<MenuIDs> = [
   'remove-repository',
   'new-repository',
   'add-local-repository',
+  'add-virtual-repository',
   'clone-repository',
   'about',
   'create-pull-request',

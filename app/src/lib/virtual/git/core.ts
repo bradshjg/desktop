@@ -39,6 +39,9 @@ export function exec(args: string[], path: string, options?: IGitExecutionOption
         if (!err) {
           resolve({ stdout, stderr, exitCode: 0, gitError: null, gitErrorDescription: null, combinedOutput: stdout + stderr, path: url.pathname })
         } else {
+          if (options?.successExitCodes?.has(1)) {
+            resolve({ stdout, stderr, exitCode: 1, gitError: null, gitErrorDescription: null, combinedOutput: stdout + stderr, path: url.pathname })
+          }
           reject(err)
         }
       }

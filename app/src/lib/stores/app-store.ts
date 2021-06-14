@@ -2835,7 +2835,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
     // if the repository path doesn't exist on disk,
     // set the flag and don't try anything Git-related
     const exists = await pathExists(repository.path)
-    if (!exists) {
+    if (!exists && !repository.path.startsWith('virtual:')) {
       this._updateRepositoryMissing(repository, true)
       return
     }

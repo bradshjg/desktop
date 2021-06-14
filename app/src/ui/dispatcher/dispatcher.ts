@@ -2388,6 +2388,10 @@ export class Dispatcher {
     this.statsStore.recordAddExistingRepository()
   }
 
+  public recordAddVirtualRepository() {
+    this.statsStore.recordAddVirtualRepository()
+  }
+
   /**
    * Increments the `mergeConflictsDialogDismissalCount` metric
    */

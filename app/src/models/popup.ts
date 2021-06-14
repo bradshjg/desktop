@@ -27,6 +27,7 @@ export enum PopupType {
   Preferences,
   RepositorySettings,
   AddRepository,
+  AddVirtualRepository,
   CreateRepository,
   CloneRepository,
   CreateBranch,
@@ -110,6 +111,7 @@ export type Popup =
       initialSelectedTab?: RepositorySettingsTab
     }
   | { type: PopupType.AddRepository; path?: string }
+  | { type: PopupType.AddVirtualRepository; path?: string }
   | { type: PopupType.CreateRepository; path?: string }
   | {
       type: PopupType.CloneRepository

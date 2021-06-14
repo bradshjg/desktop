@@ -7,10 +7,9 @@ import { getTopLevelWorkingDirectory } from '../../git'
 export async function validatedRepositoryPath(
   path: string
 ): Promise<string | null> {
-  try {
-    const virtual = new URL(path)
-    if (virtual.protocol === 'virtual:') { return path }
-  } catch (e) {}
+  if (path.startsWith('virtual:')) {
+    return path
+  }
 
   try {
     return await getTopLevelWorkingDirectory(path)

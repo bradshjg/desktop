@@ -446,12 +446,17 @@ export async function gitNetworkArguments(
   repository: Repository | null,
   account: IGitAccount | null
 ): Promise<ReadonlyArray<string>> {
-  const baseArgs = [
+  let baseArgs = [
     // Explicitly unset any defined credential helper, we rely on our
     // own askpass for authentication.
     '-c',
     'credential.helper=',
   ]
+
+  // HACK HACK HACK
+  if (repository?.path.startsWith('virtual://')) {
+    baseArgs = []
+  }
 
   if (account === null) {
     return baseArgs

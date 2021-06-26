@@ -1,7 +1,7 @@
 import { request } from 'http'
 import { ChildProcess, execFile, ExecOptionsWithStringEncoding } from 'child_process'
 
-class ExecFileError extends Error {
+export class ExecFileError extends Error {
   public code: string
 
   public constructor(message: string, code: string) {
@@ -15,7 +15,7 @@ export interface IVirtualExecOptions extends ExecOptionsWithStringEncoding {
   stdin?: string
 }
 
-export function remoteExecFile(_: string, args: string[], options: IVirtualExecOptions, cb: (error: Error | null, stdout: string, stderr: string) => void): ChildProcess {
+export function remoteExecFile(_: string, args: string[], options: IVirtualExecOptions, cb: (error: ExecFileError | null, stdout: string, stderr: string) => void): ChildProcess {
   httpRequest("/git", {args: args, options: options}).then((result) => {
     const stdout = result.stdout
     const stderr = result.stderr

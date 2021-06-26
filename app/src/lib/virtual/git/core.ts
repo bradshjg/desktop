@@ -1,6 +1,6 @@
 
 import { IGitExecutionOptions, IGitResult } from '../../git/core'
-import { remoteExecFile, IVirtualExecOptions } from '../network/client'
+import { ExecFileError, remoteExecFile, IVirtualExecOptions } from '../network/client'
 
 /**
  * Execute a git command and read the output using the virtual (remote) Git environment.
@@ -32,15 +32,17 @@ export function exec(args: string[], path: string, options?: IGitExecutionOption
     }
 
     remoteExecFile('git', args, execOptions, function(
-      err: Error | null,
+      err: ExecFileError | null,
       stdout: string,
       stderr: string
     ) {
+        const exitCode = err ? parseInt(err.code) : 0
         if (!err) {
-          resolve({ stdout, stderr, exitCode: 0, gitError: null, gitErrorDescription: null, combinedOutput: stdout + stderr, path: url.pathname })
+          resolve({ stdout, stderr, exitCode: exitCode, gitError: null, gitErrorDescription: null, combinedOutput: stdout + stderr, path: url.pathname })
         } else {
-          if (options?.successExitCodes?.has(1)) {
-            resolve({ stdout, stderr, exitCode: 1, gitError: null, gitErrorDescription: null, combinedOutput: stdout + stderr, path: url.pathname })
+
+          if (options?.successExitCodes?.has(exitCode)) {
+            resolve({ stdout, stderr, exitCode: exitCode, gitError: null, gitErrorDescription: null, combinedOutput: stdout + stderr, path: url.pathname })
           }
           reject(err)
         }

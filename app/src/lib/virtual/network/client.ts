@@ -16,7 +16,7 @@ export interface IVirtualExecOptions extends ExecOptionsWithStringEncoding {
 }
 
 export function remoteExecFile(_: string, args: string[], options: IVirtualExecOptions, cb: (error: Error | null, stdout: string, stderr: string) => void): ChildProcess {
-  httpRequest(args, options).then((result) => {
+  httpRequest("/git", {args: args, options: options}).then((result) => {
     const stdout = result.stdout
     const stderr = result.stderr
     let error = result.error
@@ -28,13 +28,20 @@ export function remoteExecFile(_: string, args: string[], options: IVirtualExecO
   return execFile('true')
 }
 
-function httpRequest(args: string[], options: IVirtualExecOptions): Promise<any> {
+export function remoteFSE(fn: string, args: string[], options: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    const postData = JSON.stringify({'args': args, 'options': options})
+    const res = httpRequest("/fse", { "function": fn, args: args, options: options })
+    res.then(result => { resolve(result.result) })
+  })
+}
+
+function httpRequest(path: string, payload: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const postData = JSON.stringify(payload)
     const postOptions = {
       host: 'localhost',
       port: '9195',
-      path: '/',
+      path: path,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,6 +1,5 @@
 import * as Path from 'path'
 import { ipcRenderer, remote } from 'electron'
-import { pathExists } from 'fs-extra'
 import { escape } from 'querystring'
 import {
   AccountsStore,
@@ -12,6 +11,7 @@ import {
   RepositoriesStore,
   SignInStore,
 } from '.'
+import { repoPathExists } from '../fs'
 import { Account } from '../../models/account'
 import { AppMenu, IMenu } from '../../models/app-menu'
 import { IAuthor } from '../../models/author'
@@ -2816,7 +2816,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
     }
 
     const foundRepository =
-      (await pathExists(repository.path)) &&
+      (await repoPathExists(repository, repository.path)) &&
       (await isGitRepository(repository.path)) &&
       (await this._loadStatus(repository)) !== null
 
@@ -2834,8 +2834,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
     // if the repository path doesn't exist on disk,
     // set the flag and don't try anything Git-related
-    const exists = await pathExists(repository.path)
-    if (!exists && !repository.path.startsWith('virtual:')) {
+    const exists = await repoPathExists(repository, repository.path)
+    if (!exists) {
       this._updateRepositoryMissing(repository, true)
       return
     }
@@ -2953,7 +2953,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       return
     }
 
-    const exists = await pathExists(repository.path)
+    const exists = await repoPathExists(repository, repository.path)
     if (!exists) {
       lookup.delete(repository.id)
       return

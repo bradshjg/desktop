@@ -4,6 +4,10 @@ import { Repository } from '../../models/repository'
 import { remoteFSE } from '../virtual/network/client'
 
 const virtualPrefix = 'virtual://'
+// HACK HACK HACK this is a hack to get around the fact that if we end up calling path.join(virtual:///foo', 'bar')
+// it will return 'virtual:/foo/bar' instead of 'virtual:///foo/bar'...you know because it's not a path and
+// at some point we must reckon with that. The above is a hack too, but it feels a little less wrong :-)
+const normalizedVirtualPrefix = 'virtual:'
 
 export const repoPathExists = (repository: Repository, path: string): Promise<boolean> => {
   if (repository.path.startsWith(virtualPrefix)) {
@@ -20,6 +24,9 @@ export const repoReadFile = (repository: Repository, path: string, encoding: str
     // HACK HACK HACK we need like a path that's not the protocol-y path, this is often joined in the code
     if (path.startsWith(virtualPrefix)) {
       path = path.replace(virtualPrefix, '')
+    }
+    if (path.startsWith(normalizedVirtualPrefix)) {
+      path = path.replace(normalizedVirtualPrefix, '')
     }
     return remoteFSE('readFile', [path, encoding], {})
   }
@@ -43,9 +50,6 @@ export async function repoReadPartialFile(
 ): Promise<Buffer> {
   return await new Promise<Buffer>((resolve, reject) => {
     if (repository.path.startsWith(virtualPrefix)) {
-      if (path.startsWith(virtualPrefix)) {
-        path = path.replace(virtualPrefix, '')
-      }
       repoReadFile(repository, path).then(value => {
         resolve(Buffer.from(value.slice(start, end)))
       })

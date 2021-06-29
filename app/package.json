@@ -1,9 +1,9 @@
 {
   "name": "desktop",
-  "productName": "GitHub Desktop",
+  "productName": "GitHub Desktop (Experimental)",
   "bundleID": "com.github.GitHubClient",
   "companyName": "GitHub, Inc.",
-  "version": "2.8.4-beta4",
+  "version": "0.1.0",
   "main": "./main.js",
   "repository": {
     "type": "git",

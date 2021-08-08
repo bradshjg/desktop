@@ -10,7 +10,8 @@ import { showContextualMenu } from '../main-process-proxy'
 import { CommitAttribution } from '../lib/commit-attribution'
 import { AvatarStack } from '../lib/avatar-stack'
 import { IMenuItem } from '../../lib/menu-item'
-import { Octicon, OcticonSymbol } from '../octicons'
+import { Octicon } from '../octicons'
+import * as OcticonSymbol from '../octicons/octicons.generated'
 import { Draggable } from '../lib/draggable'
 import {
   enableAmendingCommits,
@@ -24,6 +25,7 @@ import {
   DropTargetSelector,
   DropTargetType,
 } from '../../models/drag-drop'
+import classNames from 'classnames'
 
 interface ICommitProps {
   readonly gitHubRepository: GitHubRepository | null
@@ -131,6 +133,14 @@ export class CommitListItem extends React.PureComponent<
     } = commit
 
     const isDraggable = this.canCherryPick()
+    const hasEmptySummary = commit.summary.length === 0
+    const commitSummary = hasEmptySummary
+      ? 'Empty commit message'
+      : commit.summary
+
+    const summaryClassNames = classNames('summary', {
+      'empty-summary': hasEmptySummary,
+    })
 
     return (
       <Draggable
@@ -154,9 +164,9 @@ export class CommitListItem extends React.PureComponent<
         >
           <div className="info">
             <RichText
-              className="summary"
+              className={summaryClassNames}
               emoji={this.props.emoji}
-              text={commit.summary}
+              text={commitSummary}
               renderUrlsAsLinks={false}
             />
             <div className="description">

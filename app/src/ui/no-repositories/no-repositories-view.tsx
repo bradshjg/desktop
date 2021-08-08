@@ -25,6 +25,9 @@ interface INoRepositoriesProps {
   /** A function to call when the user chooses to add a local repository. */
   readonly onAdd: () => void
 
+    /** A function to call when the user chooses to add a virtual repository. */
+    readonly onAddVirtual: () => void
+
   /** Called when the user chooses to create a tutorial repository */
   readonly onCreateTutorialRepository: () => void
 
@@ -416,6 +419,16 @@ export class NoRepositoriesView extends React.Component<
     )
   }
 
+  private renderAddVirtualRepositoryButton() {
+    return this.renderButtonGroupButton(
+      OcticonSymbol.rocket,
+      __DARWIN__
+        ? 'Add a Virtual Repository…'
+        : 'Add a Vritual Repository…',
+      this.props.onAddVirtual
+    )
+  }
+
   private renderGetStartedActions() {
     return (
       <div className="content-pane">
@@ -424,6 +437,7 @@ export class NoRepositoriesView extends React.Component<
           {this.renderCloneButton()}
           {this.renderCreateRepositoryButton()}
           {this.renderAddExistingRepositoryButton()}
+          {this.renderAddVirtualRepositoryButton()}
         </ul>
 
         <div className="drag-drop-info">

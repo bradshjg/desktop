@@ -304,6 +304,12 @@ export class RepositoriesList extends React.Component<
           : 'Add existing repository…',
         action: this.onAddExistingRepository,
       },
+      {
+        label: __DARWIN__
+          ? 'Add Virtual Repository…'
+          : 'Add virtual repository…',
+        action: this.onAddVirtualRepository,
+      },
     ]
 
     showContextualMenu(items)
@@ -318,6 +324,10 @@ export class RepositoriesList extends React.Component<
 
   private onAddExistingRepository = () => {
     this.props.dispatcher.showPopup({ type: PopupType.AddRepository })
+  }
+
+  private onAddVirtualRepository = () => {
+    this.props.dispatcher.showPopup({ type: PopupType.AddVirtualRepository })
   }
 
   private onCreateNewRepository = () => {

@@ -1,7 +1,7 @@
-import * as FSE from 'fs-extra'
 import * as Path from 'path'
 
 import { git } from './core'
+import { repoPathExists } from '../fs'
 import { GitError } from 'dugite'
 import { Repository } from '../../models/repository'
 import { Branch } from '../../models/branch'
@@ -147,7 +147,7 @@ export async function abortMerge(repository: Repository): Promise<void> {
  */
 export async function isMergeHeadSet(repository: Repository): Promise<boolean> {
   const path = Path.join(repository.path, '.git', 'MERGE_HEAD')
-  return await FSE.pathExists(path)
+  return await repoPathExists(repository, path)
 }
 
 /**
@@ -160,5 +160,5 @@ export async function isMergeHeadSet(repository: Repository): Promise<boolean> {
  */
 export async function isSquashMsgSet(repository: Repository): Promise<boolean> {
   const path = Path.join(repository.path, '.git', 'SQUASH_MSG')
-  return await FSE.pathExists(path)
+  return await repoPathExists(repository, path)
 }

@@ -3,7 +3,7 @@ import * as Path from 'path'
 import { assertNever } from '../../../lib/fatal-error'
 
 import { getPartialBlobContents } from '../../../lib/git/show'
-import { readPartialFile } from '../../../lib/file-system'
+import { repoReadPartialFile } from '../../../lib/fs'
 import { highlight } from '../../../lib/highlighter/worker'
 import { ITokens } from '../../../lib/highlighter/types'
 
@@ -88,7 +88,8 @@ async function getNewFileContent(
   }
 
   if (file instanceof WorkingDirectoryFileChange) {
-    return readPartialFile(
+    return repoReadPartialFile(
+      repository,
       Path.join(repository.path, file.path),
       0,
       MaxHighlightContentLength - 1

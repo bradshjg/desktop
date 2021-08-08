@@ -14,6 +14,7 @@ import * as GitPerf from '../../ui/lib/git-perf'
 import * as Path from 'path'
 import { Repository } from '../../models/repository'
 import { getConfigValue, getGlobalConfigValue } from './config'
+import { exec as virtualExec } from '../virtual/git/core'
 import { isErrnoException } from '../errno-exception'
 import { ChildProcess } from 'child_process'
 import { Readable } from 'stream'
@@ -131,6 +132,10 @@ export async function git(
   name: string,
   options?: IGitExecutionOptions
 ): Promise<IGitResult> {
+  if (path.startsWith('virtual:')) {
+    return virtualExec(args, path, options)
+  }
+
   const defaultOptions: IGitExecutionOptions = {
     successExitCodes: new Set([0]),
     expectedErrors: new Set(),
@@ -442,12 +447,17 @@ export async function gitNetworkArguments(
   repository: Repository | null,
   account: IGitAccount | null
 ): Promise<ReadonlyArray<string>> {
-  const baseArgs = [
+  let baseArgs = [
     // Explicitly unset any defined credential helper, we rely on our
     // own askpass for authentication.
     '-c',
     'credential.helper=',
   ]
+
+  // HACK HACK HACK
+  if (repository?.path.startsWith('virtual://')) {
+    baseArgs = []
+  }
 
   if (account === null) {
     return baseArgs

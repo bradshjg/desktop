@@ -1,7 +1,7 @@
 import * as Path from 'path'
-import { pathExists } from 'fs-extra'
 
 import { git } from './core'
+import { repoPathExists } from '../fs'
 import { Repository } from '../../models/repository'
 import { SubmoduleEntry } from '../../models/submodule'
 
@@ -9,8 +9,8 @@ export async function listSubmodules(
   repository: Repository
 ): Promise<ReadonlyArray<SubmoduleEntry>> {
   const [submodulesFile, submodulesDir] = await Promise.all([
-    pathExists(Path.join(repository.path, '.gitmodules')),
-    pathExists(Path.join(repository.path, '.git', 'modules')),
+    repoPathExists(repository, Path.join(repository.path, '.gitmodules')),
+    repoPathExists(repository, Path.join(repository.path, '.git', 'modules')),
   ])
 
   if (!submodulesFile && !submodulesDir) {

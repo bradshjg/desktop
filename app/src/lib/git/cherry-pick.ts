@@ -1,5 +1,5 @@
 import * as Path from 'path'
-import * as FSE from 'fs-extra'
+import { repoPathExists, repoReadFile } from '../fs'
 import { GitError } from 'dugite'
 import { Repository } from '../../models/repository'
 import {
@@ -239,9 +239,10 @@ export async function getCherryPickSnapshot(
   // or aborted at the same time.
   try {
     abortSafetySha = (
-      await FSE.readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'sequencer', 'abort-safety'),
-        'utf8'
+        'utf-8'
       )
     ).trim()
 
@@ -252,7 +253,8 @@ export async function getCherryPickSnapshot(
     }
 
     headSha = (
-      await FSE.readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'sequencer', 'head'),
         'utf8'
       )
@@ -265,7 +267,8 @@ export async function getCherryPickSnapshot(
     }
 
     const remainingPicks = (
-      await FSE.readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'sequencer', 'todo'),
         'utf8'
       )
@@ -306,7 +309,8 @@ export async function getCherryPickSnapshot(
     // If cherry-pick is in progress, then there was only one commit cherry-picked
     // thus sequencer files were not used.
     const cherryPickHeadSha = (
-      await FSE.readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'CHERRY_PICK_HEAD'),
         'utf8'
       )
@@ -495,7 +499,7 @@ export async function isCherryPickHeadFound(
       '.git',
       'CHERRY_PICK_HEAD'
     )
-    return FSE.pathExists(cherryPickHeadPath)
+    return repoPathExists(repository, cherryPickHeadPath)
   } catch (err) {
     log.warn(
       `[cherryPick] a problem was encountered reading .git/CHERRY_PICK_HEAD,

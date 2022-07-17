@@ -3,11 +3,9 @@ import { Checkbox, CheckboxValue } from '../lib/checkbox'
 import { Octicon } from '../octicons'
 import * as OcticonSymbol from '../octicons/octicons.generated'
 import { RadioButton } from '../lib/radio-button'
-import { getBoolean, setBoolean } from '../../lib/local-storage'
 import { Popover, PopoverCaretPosition } from '../lib/popover'
 import { enableHideWhitespaceInDiffOption } from '../../lib/feature-flag'
 import { RepositorySectionTab } from '../../lib/app-state'
-import { HideWhitespaceWarning } from './hide-whitespace-warning'
 
 interface IDiffOptionsProps {
   readonly sourceTab: RepositorySectionTab
@@ -25,10 +23,7 @@ interface IDiffOptionsProps {
 
 interface IDiffOptionsState {
   readonly isPopoverOpen: boolean
-  readonly showNewCallout: boolean
 }
-
-const HasSeenSplitDiffKey = 'has-seen-split-diff-option'
 
 export class DiffOptions extends React.Component<
   IDiffOptionsProps,
@@ -40,7 +35,6 @@ export class DiffOptions extends React.Component<
     super(props)
     this.state = {
       isPopoverOpen: false,
-      showNewCallout: getBoolean(HasSeenSplitDiffKey) !== true,
     }
   }
 
@@ -66,10 +60,7 @@ export class DiffOptions extends React.Component<
   private closePopover = () => {
     this.setState(prevState => {
       if (prevState.isPopoverOpen) {
-        if (this.state.showNewCallout) {
-          setBoolean(HasSeenSplitDiffKey, true)
-        }
-        return { isPopoverOpen: false, showNewCallout: false }
+        return { isPopoverOpen: false }
       }
 
       return null
@@ -90,9 +81,6 @@ export class DiffOptions extends React.Component<
         <button onClick={this.onButtonClick}>
           <Octicon symbol={OcticonSymbol.gear} />
           <Octicon symbol={OcticonSymbol.triangleDown} />
-          {this.state.showNewCallout && (
-            <div className="call-to-action-bubble">New</div>
-          )}
         </button>
         {this.state.isPopoverOpen && this.renderPopover()}
       </div>
@@ -134,7 +122,6 @@ export class DiffOptions extends React.Component<
           label={
             <>
               <div>Split</div>
-              <div className="call-to-action-bubble">Beta</div>
             </>
           }
           onSelected={this.onSideBySideSelected}
@@ -166,7 +153,10 @@ export class DiffOptions extends React.Component<
           }
         />
         {this.props.sourceTab === RepositorySectionTab.Changes && (
-          <p className="secondary-text">{HideWhitespaceWarning}</p>
+          <p className="secondary-text">
+            Interacting with individual lines or hunks will be disabled while
+            hiding whitespace.
+          </p>
         )}
       </section>
     )

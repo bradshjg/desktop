@@ -1,5 +1,8 @@
 import * as Path from 'path'
+<<<<<<< HEAD
 import { repoPathExists, repoReadFile } from '../fs'
+=======
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
 import { GitError } from 'dugite'
 import { Repository } from '../../models/repository'
 import {
@@ -9,7 +12,6 @@ import {
 import { git, IGitExecutionOptions, IGitResult } from './core'
 import { getStatus } from './status'
 import { stageFiles } from './update-index'
-import { ICherryPickProgress } from '../../models/progress'
 import { getCommitsInRange, revRange } from './rev-list'
 import { CommitOneLine } from '../../models/commit'
 import { merge } from '../merge'
@@ -20,6 +22,9 @@ import { ICherryPickSnapshot } from '../../models/cherry-pick'
 import { ManualConflictResolution } from '../../models/manual-conflict-resolution'
 import { stageManualConflictResolution } from './stage'
 import { getCommit } from '.'
+import { IMultiCommitOperationProgress } from '../../models/progress'
+import { readFile } from 'fs/promises'
+import { pathExists } from '../../ui/lib/path-exists'
 
 /** The app-specific results from attempting to cherry pick commits*/
 export enum CherryPickResult {
@@ -70,7 +75,7 @@ class GitCherryPickParser {
     private count: number = 0
   ) {}
 
-  public parse(line: string): ICherryPickProgress | null {
+  public parse(line: string): IMultiCommitOperationProgress | null {
     const cherryPickRe = /^\[(.*\s.*)\]/
     const match = cherryPickRe.exec(line)
     if (match === null) {
@@ -81,7 +86,7 @@ class GitCherryPickParser {
     this.count++
 
     return {
-      kind: 'cherryPick',
+      kind: 'multiCommitOperation',
       value: round(this.count / this.commits.length, 2),
       position: this.count,
       totalCommitCount: this.commits.length,
@@ -103,7 +108,7 @@ class GitCherryPickParser {
 function configureOptionsWithCallBack(
   baseOptions: IGitExecutionOptions,
   commits: readonly CommitOneLine[],
-  progressCallback: (progress: ICherryPickProgress) => void,
+  progressCallback: (progress: IMultiCommitOperationProgress) => void,
   cherryPickedCount: number = 0
 ) {
   return merge(baseOptions, {
@@ -135,7 +140,7 @@ function configureOptionsWithCallBack(
 export async function cherryPick(
   repository: Repository,
   commits: ReadonlyArray<CommitOneLine>,
-  progressCallback?: (progress: ICherryPickProgress) => void
+  progressCallback?: (progress: IMultiCommitOperationProgress) => void
 ): Promise<CherryPickResult> {
   if (commits.length === 0) {
     return CherryPickResult.UnableToStart
@@ -239,8 +244,12 @@ export async function getCherryPickSnapshot(
   // or aborted at the same time.
   try {
     abortSafetySha = (
+<<<<<<< HEAD
       await repoReadFile(
         repository,
+=======
+      await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
         Path.join(repository.path, '.git', 'sequencer', 'abort-safety'),
         'utf-8'
       )
@@ -253,8 +262,12 @@ export async function getCherryPickSnapshot(
     }
 
     headSha = (
+<<<<<<< HEAD
       await repoReadFile(
         repository,
+=======
+      await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
         Path.join(repository.path, '.git', 'sequencer', 'head'),
         'utf8'
       )
@@ -267,8 +280,12 @@ export async function getCherryPickSnapshot(
     }
 
     const remainingPicks = (
+<<<<<<< HEAD
       await repoReadFile(
         repository,
+=======
+      await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
         Path.join(repository.path, '.git', 'sequencer', 'todo'),
         'utf8'
       )
@@ -309,8 +326,12 @@ export async function getCherryPickSnapshot(
     // If cherry-pick is in progress, then there was only one commit cherry-picked
     // thus sequencer files were not used.
     const cherryPickHeadSha = (
+<<<<<<< HEAD
       await repoReadFile(
         repository,
+=======
+      await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
         Path.join(repository.path, '.git', 'CHERRY_PICK_HEAD'),
         'utf8'
       )
@@ -322,7 +343,7 @@ export async function getCherryPickSnapshot(
 
     return {
       progress: {
-        kind: 'cherryPick',
+        kind: 'multiCommitOperation',
         value: 1,
         position: 1,
         totalCommitCount: 1,
@@ -354,7 +375,7 @@ export async function getCherryPickSnapshot(
 
   return {
     progress: {
-      kind: 'cherryPick',
+      kind: 'multiCommitOperation',
       value: round(position / commits.length, 2),
       position,
       totalCommitCount: commits.length,
@@ -382,7 +403,7 @@ export async function continueCherryPick(
   repository: Repository,
   files: ReadonlyArray<WorkingDirectoryFileChange>,
   manualResolutions: ReadonlyMap<string, ManualConflictResolution> = new Map(),
-  progressCallback?: (progress: ICherryPickProgress) => void
+  progressCallback?: (progress: IMultiCommitOperationProgress) => void
 ): Promise<CherryPickResult> {
   // only stage files related to cherry pick
   const trackedFiles = files.filter(f => {
@@ -499,7 +520,11 @@ export async function isCherryPickHeadFound(
       '.git',
       'CHERRY_PICK_HEAD'
     )
+<<<<<<< HEAD
     return repoPathExists(repository, cherryPickHeadPath)
+=======
+    return pathExists(cherryPickHeadPath)
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
   } catch (err) {
     log.warn(
       `[cherryPick] a problem was encountered reading .git/CHERRY_PICK_HEAD,

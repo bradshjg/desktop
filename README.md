@@ -1,6 +1,12 @@
 # [GitHub Desktop -- Virtual Repos](https://desktop.github.com)
 
+<<<<<<< HEAD
 [GitHub Desktop](https://github.com/desktop/desktop) fork with experimental support for "virtual repos".
+=======
+[GitHub Desktop](https://desktop.github.com/) is an open source [Electron](https://www.electronjs.org/)-based
+GitHub app. It is written in [TypeScript](https://www.typescriptlang.org) and
+uses [React](https://reactjs.org/).
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
 
 ## Virtual Repos???
 
@@ -17,10 +23,21 @@ implements the client side of the virtual repos, and the
 [VS code extension](https://github.com/bradshjg/gh-desktop-virtual-repo-server-extension)) must be running on the
 remote server (and the port `localhost:9195` must be resolve to that remote Node process...which can be a lot).
 
+<<<<<<< HEAD
 For example, to get this working over an SSH connection we'd need:
 
 * A Node runtime on the remote server, and the server process running (and the build tools to build it, for now).
 * A tunnel from `localhost:9195` to that remote Node process (e.g. using an SSH tunnel)
+=======
+Linux is not officially supported; however, you can find installers created for Linux from a fork of GitHub Desktop in the [Community Releases](https://github.com/desktop/desktop#community-releases) section.
+
+**NOTE**: There is no current migration path to import your existing
+repositories into the new application - you can drag-and-drop your repositories
+from disk onto the application to get started.
+
+
+### Beta Channel
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
 
 In GitHub Codespaces, it's _slightly_ simplified:
 
@@ -39,6 +56,9 @@ Currently a bit of a mess, but here it is:
 2. Follow [DMG build instructions](https://support.apple.com/guide/disk-utility/create-a-disk-image-dskutl11888/mac).
 
 Attach the generated DMG file to the release.
+
+
+See our [getting started documentation](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/overview/getting-started-with-github-desktop) for more information on how to set up, authenticate, and configure GitHub Desktop.
 
 ## License
 

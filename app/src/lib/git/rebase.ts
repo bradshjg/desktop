@@ -28,6 +28,8 @@ import { stageFiles } from './update-index'
 import { getStatus } from './status'
 import { getCommitsBetweenCommits } from './rev-list'
 import { Branch } from '../../models/branch'
+import { readFile } from 'fs/promises'
+import { pathExists } from '../../ui/lib/path-exists'
 
 /** The app-specific results from attempting to rebase a repository */
 export enum RebaseResult {
@@ -66,7 +68,11 @@ export enum RebaseResult {
  */
 function isRebaseHeadSet(repository: Repository) {
   const path = Path.join(repository.path, '.git', 'REBASE_HEAD')
+<<<<<<< HEAD
   return repoPathExists(repository, path)
+=======
+  return pathExists(path)
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
 }
 
 /**
@@ -91,26 +97,38 @@ export async function getRebaseInternalState(
   let baseBranchTip: string | null = null
 
   try {
+<<<<<<< HEAD
     originalBranchTip = await repoReadFile(
       repository,
+=======
+    originalBranchTip = await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
       Path.join(repository.path, '.git', 'rebase-merge', 'orig-head'),
       'utf8'
     )
 
     originalBranchTip = originalBranchTip.trim()
 
+<<<<<<< HEAD
     targetBranch = await repoReadFile(
       repository,
+=======
+    targetBranch = await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
       Path.join(repository.path, '.git', 'rebase-merge', 'head-name'),
       'utf8'
     )
 
     if (targetBranch.startsWith('refs/heads/')) {
-      targetBranch = targetBranch.substr(11).trim()
+      targetBranch = targetBranch.substring(11).trim()
     }
 
+<<<<<<< HEAD
     baseBranchTip = await repoReadFile(
       repository,
+=======
+    baseBranchTip = await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
       Path.join(repository.path, '.git', 'rebase-merge', 'onto'),
       'utf8'
     )
@@ -142,9 +160,7 @@ export async function getRebaseInternalState(
  *   - when a `git pull --rebase` was run and encounters conflicts
  *
  */
-export async function getRebaseSnapshot(
-  repository: Repository
-): Promise<{
+export async function getRebaseSnapshot(repository: Repository): Promise<{
   progress: IMultiCommitOperationProgress
   commits: ReadonlyArray<CommitOneLine>
 } | null> {
@@ -164,8 +180,12 @@ export async function getRebaseSnapshot(
 
   try {
     // this contains the patch number that was recently applied to the repository
+<<<<<<< HEAD
     const nextText = await repoReadFile(
       repository,
+=======
+    const nextText = await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
       Path.join(repository.path, '.git', 'rebase-merge', 'msgnum'),
       'utf8'
     )
@@ -180,8 +200,12 @@ export async function getRebaseSnapshot(
     }
 
     // this contains the total number of patches to be applied to the repository
+<<<<<<< HEAD
     const lastText = await repoReadFile(
       repository,
+=======
+    const lastText = await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
       Path.join(repository.path, '.git', 'rebase-merge', 'end'),
       'utf8'
     )
@@ -195,16 +219,24 @@ export async function getRebaseSnapshot(
       last = -1
     }
 
+<<<<<<< HEAD
     originalBranchTip = await repoReadFile(
       repository,
+=======
+    originalBranchTip = await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
       Path.join(repository.path, '.git', 'rebase-merge', 'orig-head'),
       'utf8'
     )
 
     originalBranchTip = originalBranchTip.trim()
 
+<<<<<<< HEAD
     baseBranchTip = await repoReadFile(
       repository,
+=======
+    baseBranchTip = await readFile(
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
       Path.join(repository.path, '.git', 'rebase-merge', 'onto'),
       'utf8'
     )
@@ -265,7 +297,11 @@ export async function getRebaseSnapshot(
 async function readRebaseHead(repository: Repository): Promise<string | null> {
   try {
     const rebaseHead = Path.join(repository.path, '.git', 'REBASE_HEAD')
+<<<<<<< HEAD
     const rebaseCurrentCommitOutput = await repoReadFile(repository, rebaseHead, 'utf8')
+=======
+    const rebaseCurrentCommitOutput = await readFile(rebaseHead, 'utf8')
+>>>>>>> 7c45f0e7c4bf0fb96c1f2b19bbf9471a7f1a245c
     return rebaseCurrentCommitOutput.trim()
   } catch (err) {
     log.warn(

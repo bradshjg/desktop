@@ -6,8 +6,10 @@ import { formatAsLocalRef } from './refs'
 import { deleteRef } from './update-ref'
 import { GitError as DugiteError } from 'dugite'
 import { getRemoteURL } from './remote'
-import { getFallbackUrlForProxyResolve } from './environment'
-import { withTrampolineEnvForRemoteOperation } from '../trampoline/trampoline-environment'
+import {
+  envForRemoteOperation,
+  getFallbackUrlForProxyResolve,
+} from './environment'
 import { createForEachRefParser } from './git-delimiter-parser'
 
 /**
@@ -74,7 +76,6 @@ export async function deleteRemoteBranch(
   remoteName: string,
   remoteBranchName: string
 ): Promise<true> {
-  const networkArguments = await gitNetworkArguments(repository, account)
   const remoteUrl =
     (await getRemoteURL(repository, remoteName).catch(err => {
       // If we can't get the URL then it's very unlikely Git will be able to
@@ -84,22 +85,19 @@ export async function deleteRemoteBranch(
       return null
     })) || getFallbackUrlForProxyResolve(account, repository)
 
-  const args = [...networkArguments, 'push', remoteName, `:${remoteBranchName}`]
+  const args = [
+    ...gitNetworkArguments(),
+    'push',
+    remoteName,
+    `:${remoteBranchName}`,
+  ]
 
   // If the user is not authenticated, the push is going to fail
   // Let this propagate and leave it to the caller to handle
-  const result = await withTrampolineEnvForRemoteOperation(
-    account,
-    remoteUrl,
-    env => {
-      return git(args, repository.path, 'deleteRemoteBranch', {
-        env,
-        expectedErrors: new Set<DugiteError>([
-          DugiteError.BranchDeletionFailed,
-        ]),
-      })
-    }
-  )
+  const result = await git(args, repository.path, 'deleteRemoteBranch', {
+    env: await envForRemoteOperation(account, remoteUrl),
+    expectedErrors: new Set<DugiteError>([DugiteError.BranchDeletionFailed]),
+  })
 
   // It's possible that the delete failed because the ref has already
   // been deleted on the remote. If we identify that specific

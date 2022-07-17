@@ -12,8 +12,8 @@ import { PullProgressParser, executionOptionsWithProgress } from '../progress'
 import { AuthenticationErrors } from './authentication'
 import { enableRecurseSubmodulesFlag } from '../feature-flag'
 import { IRemote } from '../../models/remote'
-import { merge } from '../merge'
-import { withTrampolineEnvForRemoteOperation } from '../trampoline/trampoline-environment'
+import { envForRemoteOperation } from './environment'
+import { getConfigValue } from './config'
 
 async function getPullArgs(
   repository: Repository,
@@ -21,9 +21,16 @@ async function getPullArgs(
   account: IGitAccount | null,
   progressCallback?: (progress: IPullProgress) => void
 ) {
-  const networkArguments = await gitNetworkArguments(repository, account)
+  const divergentPathArgs = await getDefaultPullDivergentBranchArguments(
+    repository
+  )
 
-  const args = [...networkArguments, ...gitRebaseArguments(), 'pull']
+  const args = [
+    ...gitNetworkArguments(),
+    ...gitRebaseArguments(),
+    'pull',
+    ...divergentPathArgs,
+  ]
 
   if (enableRecurseSubmodulesFlag()) {
     args.push('--recurse-submodules')
@@ -58,6 +65,7 @@ export async function pull(
   progressCallback?: (progress: IPullProgress) => void
 ): Promise<void> {
   let opts: IGitExecutionOptions = {
+    env: await envForRemoteOperation(account, remote.url),
     expectedErrors: AuthenticationErrors,
   }
 
@@ -104,18 +112,32 @@ export async function pull(
     account,
     progressCallback
   )
-  const result = await withTrampolineEnvForRemoteOperation(
-    account,
-    remote.url,
-    env => {
-      return git(args, repository.path, 'pull', {
-        ...opts,
-        env: merge(opts.env, env),
-      })
-    }
-  )
+  const result = await git(args, repository.path, 'pull', opts)
 
   if (result.gitErrorDescription) {
     throw new GitError(result, args)
   }
+}
+
+/**
+ * Defaults the pull default for divergent paths to try to fast forward and if
+ * not perform a merge. Aka uses the flag --ff
+ *
+ * It checks whether the user has a config set for this already, if so, no need for
+ * default.
+ */
+async function getDefaultPullDivergentBranchArguments(
+  repository: Repository
+): Promise<ReadonlyArray<string>> {
+  try {
+    const pullFF = await getConfigValue(repository, 'pull.ff')
+    return pullFF !== null ? [] : ['--ff']
+  } catch (e) {
+    log.error("Couldn't read 'pull.ff' config", e)
+  }
+
+  // If there is a failure in checking the config, we still want to use any
+  // config and not overwrite the user's set config behavior. This will show the
+  // git error if no config is set.
+  return []
 }

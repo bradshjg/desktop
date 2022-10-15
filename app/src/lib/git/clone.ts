@@ -1,10 +1,9 @@
-import { git, IGitExecutionOptions, gitNetworkArguments } from './core'
+import { git, IGitExecutionOptions } from './core'
 import { ICloneProgress } from '../../models/progress'
 import { CloneOptions } from '../../models/clone-options'
 import { CloneProgressParser, executionOptionsWithProgress } from '../progress'
-import { withTrampolineEnvForRemoteOperation } from '../trampoline/trampoline-environment'
-import { merge } from '../merge'
 import { getDefaultBranch } from '../helpers/default-branch'
+import { envForRemoteOperation } from './environment'
 
 /**
  * Clones a repository from a given url into to the specified path.
@@ -32,19 +31,18 @@ export async function clone(
   options: CloneOptions,
   progressCallback?: (progress: ICloneProgress) => void
 ): Promise<void> {
-  const networkArguments = await gitNetworkArguments(null, options.account)
+  const env = await envForRemoteOperation(options.account, url)
 
   const defaultBranch = options.defaultBranch ?? (await getDefaultBranch())
 
   const args = [
-    ...networkArguments,
     '-c',
     `init.defaultBranch=${defaultBranch}`,
     'clone',
     '--recursive',
   ]
 
-  let opts: IGitExecutionOptions = {}
+  let opts: IGitExecutionOptions = { env }
 
   if (progressCallback) {
     args.push('--progress')
@@ -74,10 +72,5 @@ export async function clone(
 
   args.push('--', url, path)
 
-  await withTrampolineEnvForRemoteOperation(options.account, url, env => {
-    return git(args, __dirname, 'clone', {
-      ...opts,
-      env: merge(opts.env, env),
-    })
-  })
+  await git(args, __dirname, 'clone', opts)
 }

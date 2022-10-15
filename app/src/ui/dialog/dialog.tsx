@@ -585,10 +585,12 @@ export class Dialog extends React.Component<IDialogProps, IDialogState> {
         error: this.props.type === 'error',
         warning: this.props.type === 'warning',
       },
-      this.props.className
+      this.props.className,
+      'tooltip-host'
     )
 
     return (
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
       <dialog
         ref={this.onDialogRef}
         id={this.props.id}

@@ -59,7 +59,6 @@ export class Repository {
      * which introduces new users to some core concepts of Git and GitHub.
      */
     public readonly isTutorialRepository: boolean = false,
-    public readonly isSSHRepository: boolean = false
   ) {
     this.mainWorkTree = { path }
     this.name = (gitHubRepository && gitHubRepository.name) || getBaseName(path)
@@ -78,6 +77,10 @@ export class Repository {
 
   public get path(): string {
     return this.mainWorkTree.path
+  }
+
+  public get isSSHRepository(): boolean {
+    return this.path.startsWith('ssh::')
   }
 }
 

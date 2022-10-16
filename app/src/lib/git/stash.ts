@@ -108,8 +108,12 @@ export async function getLastDesktopStashEntryForBranch(
 }
 
 /** Creates a stash entry message that indicates the entry was created by Desktop */
-export function createDesktopStashMessage(branchName: string) {
-  return `${DesktopStashEntryMarker}<${branchName}>`
+export function createDesktopStashMessage(repository: Repository, branchName: string) {
+  if (repository.isSSHRepository) {
+    return `'${DesktopStashEntryMarker}<${branchName}>'`
+  } else {
+    return `${DesktopStashEntryMarker}<${branchName}>`
+  }
 }
 
 /**
@@ -130,7 +134,7 @@ export async function createDesktopStashEntry(
   await stageFiles(repository, fullySelectedUntrackedFiles)
 
   const branchName = typeof branch === 'string' ? branch : branch.name
-  const message = createDesktopStashMessage(branchName)
+  const message = createDesktopStashMessage(repository, branchName)
   const args = ['stash', 'push', '-m', message]
 
   const result = await git(args, repository.path, 'createStashEntry', {

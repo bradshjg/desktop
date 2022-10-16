@@ -1,5 +1,11 @@
 {
   "releases": {
+    "3.1.2-beta2-virtual": [
+      "[Fixed] Git credentials will now be configured on Codespaces",
+      "[Fixed] Cherry picking to new branches now _should_ work over SSH",
+      "[Fixed] Ref parsing _should_ work a little better...but it's hacky",
+      "[Fixed] Stash can now be pushed and popped over SSH"
+    ],
     "3.1.2-beta1-virtual": [
       "[Improved] Virtual repos now use an SSH transport removing the need to run an HTTP server on the remote host - #7",
       "[Fixed] Support discarding new file for virtual repos - #8",

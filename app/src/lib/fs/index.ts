@@ -3,10 +3,6 @@ import * as FSE from 'fs-extra'
 import { Repository } from '../../models/repository'
 import { remotePathExists, remoteReadFile, remoteReadPartialFile } from '../virtual/fs/core'
 
-const isSSHRepo = (repository: Repository): Boolean => {
-  return repository.path.startsWith('ssh::')
-}
-
 const sshPath = (path: string) => {
   // HACK HACK HACK the path is probably something like ssh::someHost::/path/to/file...but maybe it's /path/to/file
   // so we handle both cases by splitting on :: and taking the last element
@@ -14,7 +10,7 @@ const sshPath = (path: string) => {
 }
 
 export const repoPathExists = (repository: Repository, path: string): Promise<boolean> => {
-  if (isSSHRepo(repository)) {
+  if (repository.isSSHRepository) {
     path = sshPath(path)
     return remotePathExists(repository, path)
   }
@@ -22,7 +18,7 @@ export const repoPathExists = (repository: Repository, path: string): Promise<bo
 }
 
 export const repoReadFile = (repository: Repository, path: string, encoding: string = 'utf-8'): Promise<string> => {
-  if (isSSHRepo(repository)) {
+  if (repository.isSSHRepository) {
     path = sshPath(path)
     return remoteReadFile(repository, path)
   }
@@ -45,7 +41,7 @@ export async function repoReadPartialFile(
   end: number
 ): Promise<Buffer> {
   return await new Promise<Buffer>((resolve, reject) => {
-    if (isSSHRepo(repository)) {
+    if (repository.isSSHRepository) {
       path = sshPath(path)
       remoteReadPartialFile(repository, path, start, end).then(value => {
         resolve(Buffer.from(value))

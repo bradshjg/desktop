@@ -1,3 +1,5 @@
+import { Repository } from "../../models/repository"
+
 /**
  * Create a new parser suitable for parsing --format output from commands such
  * as `git log`, `git stash`, and other commands that are not derived from
@@ -52,11 +54,18 @@ export function createLogParser<T extends Record<string, string>>(fields: T) {
  *
  */
 export function createForEachRefParser<T extends Record<string, string>>(
+  repository: Repository,
   fields: T
 ) {
   const keys: Array<keyof T> = Object.keys(fields)
   const format = Object.values(fields).join('%00')
-  const formatArgs = [`--format='%00${format}%00'`]
+  let formatArgs
+  if (repository.isSSHRepository) {
+    formatArgs = [`--format='%00${format}%00'`]
+  } else {
+    formatArgs = [`--format=%00${format}%00`]
+  }
+
 
   const parse = (value: string) => {
     const records = value.split('\0')

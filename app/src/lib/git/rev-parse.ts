@@ -97,7 +97,8 @@ export type RepositoryType =
  * found.
  */
 export async function getRepositoryType(path: string): Promise<RepositoryType> {
-  if (!(await directoryExists(path))) {
+  const isSSHRepository = path.startsWith('ssh::')
+  if (!isSSHRepository && !(await directoryExists(path))) {
     return { kind: 'missing' }
   }
 
@@ -114,7 +115,10 @@ export async function getRepositoryType(path: string): Promise<RepositoryType> {
 
       return isBare === 'true'
         ? { kind: 'bare' }
-        : { kind: 'regular', topLevelWorkingDirectory: resolve(path, cdup) }
+        : {
+            kind: 'regular',
+            topLevelWorkingDirectory: isSSHRepository ? path : resolve(path, cdup)
+          }
     }
 
     const unsafeMatch =

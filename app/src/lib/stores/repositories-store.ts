@@ -28,7 +28,6 @@ import { WorkflowPreferences } from '../../models/workflow-preferences'
 import { clearTagsToPush } from './helpers/tags-to-push-storage'
 import { IMatchedGitHubRepository } from '../repository-matching'
 import { shallowEquals } from '../equality'
-import { setCodespacesGitConfig } from '../virtual/git/codespaces-config'
 
 type AddRepositoryOptions = {
   missing?: boolean
@@ -154,7 +153,6 @@ export class RepositoriesStore extends TypedBaseStore<
       repo.alias,
       repo.workflowPreferences,
       repo.isTutorialRepository,
-      repo.isSSHRepository
     )
   }
 
@@ -254,20 +252,11 @@ export class RepositoriesStore extends TypedBaseStore<
           missing: opts?.missing ?? false,
           lastStashCheckDate: null,
           alias: null,
-          isSSHRepository: path.startsWith('ssh::'),
         }
         const id = await this.db.repositories.add(dbRepo)
         return this.toRepository({ id, ...dbRepo })
       }
     )
-    // HACk HACK HACK
-    // TODO: find a better place for first-time setup of Codespaces git credentials
-    if (repository.isSSHRepository) {
-      const result = await setCodespacesGitConfig(repository.path)
-      if (result) {
-        log.info(`[Codespaces] set git config for ${repository.path}`)
-      }
-    }
 
     this.emitUpdatedRepositories()
 

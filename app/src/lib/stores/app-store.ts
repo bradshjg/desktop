@@ -5648,7 +5648,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
         const [refreshedRepo, usingLFS] = await Promise.all([
           this.repositoryWithRefreshedGitHubRepository(addedRepo),
-          this.isUsingLFS(addedRepo),
+          addedRepo.isSSHRepository ? false : this.isUsingLFS(addedRepo),
         ])
         addedRepositories.push(refreshedRepo)
 

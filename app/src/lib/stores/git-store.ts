@@ -101,6 +101,7 @@ import { DiffSelection, ITextDiff } from '../../models/diff'
 import { getDefaultBranch } from '../helpers/default-branch'
 import { stat } from 'fs/promises'
 import { findForkedRemotesToPrune } from './helpers/find-forked-remotes-to-prune'
+import { remoteDeletePath } from '../virtual/fs/core'
 
 /** The number of commits to load from history per batch. */
 const CommitBatchSize = 100
@@ -1508,9 +1509,13 @@ export class GitStore extends BaseStore {
         // running it inside this work queue that spreads out the calls across
         // as many animation frames as it needs to.
         try {
-          await this.shell.moveItemToTrash(
-            Path.resolve(this.repository.path, file.path)
-          )
+          if (this.repository.isSSHRepository) {
+            await remoteDeletePath(this.repository, file.path)
+          } else {
+            await this.shell.moveItemToTrash(
+              Path.resolve(this.repository.path, file.path)
+            )
+          }
         } catch (e) {
           if (askForConfirmationOnDiscardChangesPermanently) {
             throw new DiscardChangesError(e, this.repository, files)

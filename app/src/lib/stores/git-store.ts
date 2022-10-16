@@ -101,7 +101,7 @@ import { DiffSelection, ITextDiff } from '../../models/diff'
 import { getDefaultBranch } from '../helpers/default-branch'
 import { stat } from 'fs/promises'
 import { findForkedRemotesToPrune } from './helpers/find-forked-remotes-to-prune'
-import { remoteDeletePath } from '../virtual/fs/core'
+import { remoteDeletePath, remoteLastFetched } from '../virtual/fs/core'
 
 /** The number of commits to load from history per batch. */
 const CommitBatchSize = 100
@@ -1427,17 +1427,21 @@ export class GitStore extends BaseStore {
   public async updateLastFetched() {
     const fetchHeadPath = Path.join(this.repository.path, '.git', 'FETCH_HEAD')
 
-    try {
-      const fstat = await stat(fetchHeadPath)
+    if (this.repository.isSSHRepository) {
+      this._lastFetched = await remoteLastFetched(this.repository)
+    } else {
+      try {
+        const fstat = await stat(fetchHeadPath)
 
-      // If the file's empty then it _probably_ means the fetch failed and we
-      // shouldn't update the last fetched date.
-      if (fstat.size > 0) {
-        this._lastFetched = fstat.mtime
+        // If the file's empty then it _probably_ means the fetch failed and we
+        // shouldn't update the last fetched date.
+        if (fstat.size > 0) {
+          this._lastFetched = fstat.mtime
+        }
+      } catch {
+        // An error most likely means the repository's never been published.
+        this._lastFetched = null
       }
-    } catch {
-      // An error most likely means the repository's never been published.
-      this._lastFetched = null
     }
 
     this.emitUpdate()

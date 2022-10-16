@@ -8,7 +8,7 @@ import { getTopLevelWorkingDirectory } from '../../git'
 export async function validatedRepositoryPath(
   path: string
 ): Promise<string | null> {
-  if (path.startsWith('virtual:')) {
+  if (path.startsWith('ssh::')) {
     return path
   }
 

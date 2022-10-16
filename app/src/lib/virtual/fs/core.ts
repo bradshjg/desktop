@@ -55,3 +55,27 @@ export const remoteDeletePath = (
     })
   })
 }
+
+export const remoteLastFetched = (
+  repository: Repository,
+): Promise<Date|null> => {
+  // This feels dangerous...but these environments are ephemeral right?...better not run this locally though!
+  const command = remoteCommand(repository.path, `stat --format='%s:%Y' .git/FETCH_HEAD`)
+  log.info(`Executing remoteDeletePath: ${command}`)
+  return new Promise((resolve) => {
+    cp.exec(command, (error, stdout, stderr) => {
+      const [raw_size, raw_mtime] = stdout.split(':')
+      if (raw_size === '0') {
+        resolve(null)
+      } else {
+        let mtime
+        try {
+          mtime = new Date(parseInt(raw_mtime, 10) * 1000)
+        } catch {
+          mtime = null
+        }
+        resolve(mtime)
+      }
+    })
+  })
+}

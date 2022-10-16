@@ -8,10 +8,10 @@ const remoteCommand = (path: string, command: string) => {
 }
 
 export const remotePathExists = (repository: Repository, path: string): Promise<boolean> => {
-  const command = remoteCommand(repository.path, `test -f ${path}`)
+  const command = remoteCommand(repository.path, `test -e ${path}`)
   return new Promise((resolve) => {
     cp.exec(command, (error) => {
-      resolve(error?.code === 0)
+      resolve(!error)
     })
   })
 }

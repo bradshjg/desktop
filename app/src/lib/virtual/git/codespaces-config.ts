@@ -1,15 +1,20 @@
+import { Repository } from '../../../models/repository'
 import * as cp from 'child_process'
 
-export const setCodespacesGitConfig = (path: string): Promise<boolean> => {
-  const host = path.split('::')[1]
+export const setCodespacesGitConfig = (repository: Repository): Promise<boolean> => {
+  const host = repository.path.split('::')[1]
   const args = [
     host,
-    `grep -q restore-secrets /.codespaces/bin/gitcredential_github.sh || sudo sed -i '/^echo protocol/i . /etc/profile.d/00-restore-secrets.sh' /.codespaces/bin/gitcredential_github.sh`,
+    `grep -q codespaces /.codespaces/bin/gitcredential_github.sh || sudo sed -i '/^echo protocol/i . /etc/profile.d/codespaces.sh' /.codespaces/bin/gitcredential_github.sh`,
   ]
-  log.info(`Executing setCodespacesGitConfig: ssh '${args.join(' ')}'`)
   return new Promise((resolve) => {
-    cp.execFile('ssh', args, (error) => {
-      resolve(!error)
-    })
+    if (repository.isSSHRepository) {
+      log.info(`Executing setCodespacesGitConfig: ssh '${args.join(' ')}'`)
+      cp.execFile('ssh', args, (error) => {
+        resolve(!error)
+      })
+    } else {
+      resolve(false)
+    }
   })
 }

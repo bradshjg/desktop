@@ -304,6 +304,7 @@ import { offsetFromNow } from '../offset-from'
 import { findContributionTargetDefaultBranch } from '../branch'
 import { ValidNotificationPullRequestReview } from '../valid-notification-pull-request-review'
 import { determineMergeability } from '../git/merge-tree'
+import { setCodespacesGitConfig } from '../virtual/git/codespaces-config'
 
 const LastSelectedRepositoryIDKey = 'last-selected-repository-id'
 
@@ -3230,6 +3231,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       gitStore.loadStashEntries(),
       this._refreshAuthor(repository),
       refreshSectionPromise,
+      setCodespacesGitConfig(repository),
     ])
 
     await gitStore.refreshTags()

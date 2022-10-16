@@ -29,8 +29,8 @@ Host cs
   NoHostAuthenticationForLocalhost yes
   StrictHostKeyChecking no
   ControlMaster auto
-  ControlPath ~/.ssh/ssh-%r@%h:%p
-  ControlPersist 60m
+  ControlPath ~/.ssh/ssh-cs-persist
+  ControlPersist 5m
 ```
 
 and the git repository is at `/workspaces/desktop` on the remote host.

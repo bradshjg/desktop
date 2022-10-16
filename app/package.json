@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "productName": "GitHub Desktop",
+  "productName": "GitHub Desktop (Experimental)",
   "bundleID": "com.github.GitHubClient",
   "companyName": "GitHub, Inc.",
   "version": "3.1.2-beta1",

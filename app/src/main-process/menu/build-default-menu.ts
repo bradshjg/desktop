@@ -118,6 +118,12 @@ export function buildDefaultMenu({
         accelerator: 'CmdOrCtrl+Shift+O',
         click: emit('clone-repository'),
       },
+      {
+        label: __DARWIN__ ? 'Add Virtual Repository…' : 'Add virtual repository…',
+        id: 'add-virtual-repository',
+        accelerator: 'CmdOrCtrl+Shift+V',
+        click: emit('add-virtual-repository'),
+      },
     ],
   }
 

@@ -9,6 +9,7 @@ import {
   RepositoriesStore,
   SignInStore,
 } from '.'
+import { repoPathExists } from '../fs'
 import { Account } from '../../models/account'
 import { AppMenu, IMenu } from '../../models/app-menu'
 import { IAuthor } from '../../models/author'
@@ -299,7 +300,6 @@ import {
   getNotificationsEnabled,
 } from './notifications-store'
 import * as ipcRenderer from '../ipc-renderer'
-import { pathExists } from '../../ui/lib/path-exists'
 import { offsetFromNow } from '../offset-from'
 import { findContributionTargetDefaultBranch } from '../branch'
 import { ValidNotificationPullRequestReview } from '../valid-notification-pull-request-review'
@@ -3170,7 +3170,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
     }
 
     const foundRepository =
-      (await pathExists(repository.path)) &&
+      (await repoPathExists(repository, repository.path)) &&
       (await getRepositoryType(repository.path)).kind === 'regular' &&
       (await this._loadStatus(repository)) !== null
 
@@ -3188,7 +3188,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
     // if the repository path doesn't exist on disk,
     // set the flag and don't try anything Git-related
-    const exists = await pathExists(repository.path)
+    const exists = await repoPathExists(repository, repository.path)
     if (!exists) {
       this._updateRepositoryMissing(repository, true)
       return
@@ -3305,7 +3305,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       return
     }
 
-    const exists = await pathExists(repository.path)
+    const exists = await repoPathExists(repository, repository.path)
     if (!exists) {
       lookup.delete(repository.id)
       return

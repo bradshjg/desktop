@@ -8,6 +8,7 @@ import {
 import { assertNever } from '../fatal-error'
 import * as GitPerf from '../../ui/lib/git-perf'
 import * as Path from 'path'
+import { exec as virtualExec } from '../virtual/git/core'
 import { isErrnoException } from '../errno-exception'
 import { ChildProcess } from 'child_process'
 import { Readable } from 'stream'
@@ -15,6 +16,10 @@ import split2 from 'split2'
 import { getFileFromExceedsError } from '../helpers/regex'
 import { merge } from '../merge'
 import { withTrampolineEnv } from '../trampoline/trampoline-environment'
+import { Repository } from '../../models/repository'
+import { IGitAccount } from '../../models/git-account'
+import { getConfigValue, getGlobalConfigValue} from './config'
+import { getDotComAPIEndpoint } from '../api'
 
 /**
  * An extension of the execution options in dugite that
@@ -128,6 +133,10 @@ export async function git(
   name: string,
   options?: IGitExecutionOptions
 ): Promise<IGitResult> {
+  if (path.startsWith('virtual:')) {
+    return virtualExec(args, path, options)
+  }
+
   const defaultOptions: IGitExecutionOptions = {
     successExitCodes: new Set([0]),
     expectedErrors: new Set(),
@@ -444,12 +453,47 @@ function getDescriptionForError(error: DugiteError): string | null {
  * These arguments should be inserted before the subcommand, i.e in the case of
  * `git pull` these arguments needs to go before the `pull` argument.
  */
-export const gitNetworkArguments = () => [
-  // Explicitly unset any defined credential helper, we rely on our
-  // own askpass for authentication.
-  '-c',
-  'credential.helper=',
-]
+export async function gitNetworkArguments(
+  repository: Repository | null,
+  account: IGitAccount | null
+): Promise<ReadonlyArray<string>> {
+  let baseArgs = [
+    // Explicitly unset any defined credential helper, we rely on our
+    // own askpass for authentication.
+    '-c',
+    'credential.helper=',
+  ]
+
+  // HACK HACK HACK
+  if (repository?.path.startsWith('virtual://')) {
+    baseArgs = []
+  }
+
+  if (account === null) {
+    return baseArgs
+  }
+
+  const isDotComAccount = account.endpoint === getDotComAPIEndpoint()
+
+  if (!isDotComAccount) {
+    return baseArgs
+  }
+
+  const name = 'protocol.version'
+
+  const protocolVersion =
+    repository != null
+      ? await getConfigValue(repository, name)
+      : await getGlobalConfigValue(name)
+
+  if (protocolVersion !== null) {
+    // protocol.version is already set, we should not override it with our own
+    return baseArgs
+  }
+
+  // opt in for v2 of the Git Wire protocol for GitHub repositories
+  return [...baseArgs, '-c', 'protocol.version=2']
+}
 
 /**
  * Returns the arguments to use on any git operation that can end up

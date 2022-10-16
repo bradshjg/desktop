@@ -90,8 +90,9 @@ export async function fetchTagsToPush(
   remote: IRemote,
   branchName: string
 ): Promise<ReadonlyArray<string>> {
+  const networkArgs = await gitNetworkArguments(repository, account)
   const args = [
-    ...gitNetworkArguments(),
+    ...networkArgs,
     'push',
     remote.name,
     branchName,

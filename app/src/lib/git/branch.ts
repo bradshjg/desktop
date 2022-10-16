@@ -85,8 +85,9 @@ export async function deleteRemoteBranch(
       return null
     })) || getFallbackUrlForProxyResolve(account, repository)
 
+  const networkArgs = await gitNetworkArguments(repository, account)
   const args = [
-    ...gitNetworkArguments(),
+    ...networkArgs,
     'push',
     remoteName,
     `:${remoteBranchName}`,

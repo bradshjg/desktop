@@ -64,7 +64,7 @@ import { Preferences } from './preferences'
 import { RepositorySettings } from './repository-settings'
 import { AppError } from './app-error'
 import { MissingRepository } from './missing-repository'
-import { AddExistingRepository, CreateRepository } from './add-repository'
+import { AddExistingRepository, AddVirtualRepository, CreateRepository } from './add-repository'
 import { CloneRepository } from './clone-repository'
 import { CreateBranch } from './create-branch'
 import { SignIn } from './sign-in'
@@ -366,6 +366,8 @@ export class App extends React.Component<IAppProps, IAppState> {
         return this.chooseRepository()
       case 'add-local-repository':
         return this.showAddLocalRepo()
+      case 'add-virtual-repository':
+        return this.showAddVirtualRepo()
       case 'create-branch':
         return this.showCreateBranch()
       case 'show-branches':
@@ -799,6 +801,10 @@ export class App extends React.Component<IAppProps, IAppState> {
 
   private showAddLocalRepo = () => {
     return this.props.dispatcher.showPopup({ type: PopupType.AddRepository })
+  }
+
+  private showAddVirtualRepo = () => {
+    return this.props.dispatcher.showPopup({ type: PopupType.AddVirtualRepository })
   }
 
   private showCreateRepository = () => {
@@ -1537,6 +1543,15 @@ export class App extends React.Component<IAppProps, IAppState> {
             path={popup.path}
           />
         )
+        case PopupType.AddVirtualRepository:
+          return (
+            <AddVirtualRepository
+              key="add-virtual-repository"
+              onDismissed={onPopupDismissedFn}
+              dispatcher={this.props.dispatcher}
+              path={popup.path}
+            />
+          )
       case PopupType.CreateRepository:
         return (
           <CreateRepository
@@ -2945,6 +2960,7 @@ export class App extends React.Component<IAppProps, IAppState> {
           onCreate={this.showCreateRepository}
           onClone={this.showCloneRepo}
           onAdd={this.showAddLocalRepo}
+          onAddVirtual={this.showAddVirtualRepo}
           onCreateTutorialRepository={this.showCreateTutorialRepositoryPopup}
           onResumeTutorialRepository={this.onResumeTutorialRepository}
           tutorialPaused={this.isTutorialPaused()}

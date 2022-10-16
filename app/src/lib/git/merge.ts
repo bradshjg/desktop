@@ -1,9 +1,9 @@
 import * as Path from 'path'
 
 import { git } from './core'
+import { repoPathExists } from '../fs'
 import { GitError } from 'dugite'
 import { Repository } from '../../models/repository'
-import { pathExists } from '../../ui/lib/path-exists'
 
 export enum MergeResult {
   /** The merge completed successfully */
@@ -104,7 +104,7 @@ export async function abortMerge(repository: Repository): Promise<void> {
  */
 export async function isMergeHeadSet(repository: Repository): Promise<boolean> {
   const path = Path.join(repository.path, '.git', 'MERGE_HEAD')
-  return await pathExists(path)
+  return await repoPathExists(repository, path)
 }
 
 /**
@@ -117,5 +117,5 @@ export async function isMergeHeadSet(repository: Repository): Promise<boolean> {
  */
 export async function isSquashMsgSet(repository: Repository): Promise<boolean> {
   const path = Path.join(repository.path, '.git', 'SQUASH_MSG')
-  return await pathExists(path)
+  return await repoPathExists(repository, path)
 }

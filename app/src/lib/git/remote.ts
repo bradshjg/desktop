@@ -106,8 +106,9 @@ export async function updateRemoteHEAD(
     env: await envForRemoteOperation(account, remote.url),
   }
 
+  const networkArgs = await gitNetworkArguments(repository, account)
   await git(
-    [...gitNetworkArguments(), 'remote', 'set-head', '-a', remote.name],
+    [...networkArgs, 'remote', 'set-head', '-a', remote.name],
     repository.path,
     'updateRemoteHEAD',
     options

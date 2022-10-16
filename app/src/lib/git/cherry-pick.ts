@@ -1,4 +1,5 @@
 import * as Path from 'path'
+import { repoPathExists, repoReadFile } from '../fs'
 import { GitError } from 'dugite'
 import { Repository } from '../../models/repository'
 import {
@@ -19,8 +20,6 @@ import { ManualConflictResolution } from '../../models/manual-conflict-resolutio
 import { stageManualConflictResolution } from './stage'
 import { getCommit } from '.'
 import { IMultiCommitOperationProgress } from '../../models/progress'
-import { readFile } from 'fs/promises'
-import { pathExists } from '../../ui/lib/path-exists'
 
 /** The app-specific results from attempting to cherry pick commits*/
 export enum CherryPickResult {
@@ -240,9 +239,10 @@ export async function getCherryPickSnapshot(
   // or aborted at the same time.
   try {
     abortSafetySha = (
-      await readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'sequencer', 'abort-safety'),
-        'utf8'
+        'utf-8'
       )
     ).trim()
 
@@ -253,7 +253,8 @@ export async function getCherryPickSnapshot(
     }
 
     headSha = (
-      await readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'sequencer', 'head'),
         'utf8'
       )
@@ -266,7 +267,8 @@ export async function getCherryPickSnapshot(
     }
 
     const remainingPicks = (
-      await readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'sequencer', 'todo'),
         'utf8'
       )
@@ -307,7 +309,8 @@ export async function getCherryPickSnapshot(
     // If cherry-pick is in progress, then there was only one commit cherry-picked
     // thus sequencer files were not used.
     const cherryPickHeadSha = (
-      await readFile(
+      await repoReadFile(
+        repository,
         Path.join(repository.path, '.git', 'CHERRY_PICK_HEAD'),
         'utf8'
       )
@@ -496,7 +499,7 @@ export async function isCherryPickHeadFound(
       '.git',
       'CHERRY_PICK_HEAD'
     )
-    return pathExists(cherryPickHeadPath)
+    return repoPathExists(repository, cherryPickHeadPath)
   } catch (err) {
     log.warn(
       `[cherryPick] a problem was encountered reading .git/CHERRY_PICK_HEAD,

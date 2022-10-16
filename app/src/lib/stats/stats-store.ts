@@ -58,6 +58,7 @@ const HasSentOptInPingKey = 'has-sent-stats-opt-in-ping'
 const WelcomeWizardInitiatedAtKey = 'welcome-wizard-initiated-at'
 const WelcomeWizardCompletedAtKey = 'welcome-wizard-terminated-at'
 const FirstRepositoryAddedAtKey = 'first-repository-added-at'
+const FirstVirtualRepositoryAddedAtKey = 'first-virtual-repository-added-at'
 const FirstRepositoryClonedAtKey = 'first-repository-cloned-at'
 const FirstRepositoryCreatedAtKey = 'first-repository-created-at'
 const FirstCommitCreatedAtKey = 'first-commit-created-at'
@@ -1147,6 +1148,10 @@ export class StatsStore implements IStatsStore {
 
   public recordAddExistingRepository() {
     createLocalStorageTimestamp(FirstRepositoryAddedAtKey)
+  }
+
+  public recordAddVirtualRepository() {
+    createLocalStorageTimestamp(FirstVirtualRepositoryAddedAtKey)
   }
 
   public recordCloneRepository() {

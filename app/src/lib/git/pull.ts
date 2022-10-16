@@ -25,8 +25,9 @@ async function getPullArgs(
     repository
   )
 
+  const networkArgs = await gitNetworkArguments(repository, account)
   const args = [
-    ...gitNetworkArguments(),
+    ...networkArgs,
     ...gitRebaseArguments(),
     'pull',
     ...divergentPathArgs,

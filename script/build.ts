@@ -223,9 +223,8 @@ function packageApp() {
       {
         name: getBundleID(),
         schemes: [
-          !isDevelopmentBuild
-            ? 'x-github-desktop-auth'
-            : 'x-github-desktop-dev-auth',
+          'x-github-desktop-auth',
+          'x-github-desktop-dev-auth',
           'x-github-client',
           'github-mac',
         ],

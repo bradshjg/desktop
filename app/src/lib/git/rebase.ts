@@ -3,6 +3,7 @@ import { ChildProcess } from 'child_process'
 import { GitError } from 'dugite'
 import byline from 'byline'
 
+import { repoPathExists, repoReadFile } from '../fs'
 import { Repository } from '../../models/repository'
 import { RebaseInternalState, RebaseProgressOptions } from '../../models/rebase'
 import { IMultiCommitOperationProgress } from '../../models/progress'
@@ -27,8 +28,6 @@ import { stageFiles } from './update-index'
 import { getStatus } from './status'
 import { getCommitsBetweenCommits } from './rev-list'
 import { Branch } from '../../models/branch'
-import { readFile } from 'fs/promises'
-import { pathExists } from '../../ui/lib/path-exists'
 
 /** The app-specific results from attempting to rebase a repository */
 export enum RebaseResult {
@@ -67,7 +66,7 @@ export enum RebaseResult {
  */
 function isRebaseHeadSet(repository: Repository) {
   const path = Path.join(repository.path, '.git', 'REBASE_HEAD')
-  return pathExists(path)
+  return repoPathExists(repository, path)
 }
 
 /**
@@ -92,14 +91,16 @@ export async function getRebaseInternalState(
   let baseBranchTip: string | null = null
 
   try {
-    originalBranchTip = await readFile(
+    originalBranchTip = await repoReadFile(
+      repository,
       Path.join(repository.path, '.git', 'rebase-merge', 'orig-head'),
       'utf8'
     )
 
     originalBranchTip = originalBranchTip.trim()
 
-    targetBranch = await readFile(
+    targetBranch = await repoReadFile(
+      repository,
       Path.join(repository.path, '.git', 'rebase-merge', 'head-name'),
       'utf8'
     )
@@ -108,7 +109,8 @@ export async function getRebaseInternalState(
       targetBranch = targetBranch.substring(11).trim()
     }
 
-    baseBranchTip = await readFile(
+    baseBranchTip = await repoReadFile(
+      repository,
       Path.join(repository.path, '.git', 'rebase-merge', 'onto'),
       'utf8'
     )
@@ -160,7 +162,8 @@ export async function getRebaseSnapshot(repository: Repository): Promise<{
 
   try {
     // this contains the patch number that was recently applied to the repository
-    const nextText = await readFile(
+    const nextText = await repoReadFile(
+      repository,
       Path.join(repository.path, '.git', 'rebase-merge', 'msgnum'),
       'utf8'
     )
@@ -175,7 +178,8 @@ export async function getRebaseSnapshot(repository: Repository): Promise<{
     }
 
     // this contains the total number of patches to be applied to the repository
-    const lastText = await readFile(
+    const lastText = await repoReadFile(
+      repository,
       Path.join(repository.path, '.git', 'rebase-merge', 'end'),
       'utf8'
     )
@@ -189,14 +193,16 @@ export async function getRebaseSnapshot(repository: Repository): Promise<{
       last = -1
     }
 
-    originalBranchTip = await readFile(
+    originalBranchTip = await repoReadFile(
+      repository,
       Path.join(repository.path, '.git', 'rebase-merge', 'orig-head'),
       'utf8'
     )
 
     originalBranchTip = originalBranchTip.trim()
 
-    baseBranchTip = await readFile(
+    baseBranchTip = await repoReadFile(
+      repository,
       Path.join(repository.path, '.git', 'rebase-merge', 'onto'),
       'utf8'
     )
@@ -257,7 +263,7 @@ export async function getRebaseSnapshot(repository: Repository): Promise<{
 async function readRebaseHead(repository: Repository): Promise<string | null> {
   try {
     const rebaseHead = Path.join(repository.path, '.git', 'REBASE_HEAD')
-    const rebaseCurrentCommitOutput = await readFile(rebaseHead, 'utf8')
+    const rebaseCurrentCommitOutput = await repoReadFile(repository, rebaseHead, 'utf8')
     return rebaseCurrentCommitOutput.trim()
   } catch (err) {
     log.warn(

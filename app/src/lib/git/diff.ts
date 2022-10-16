@@ -109,6 +109,10 @@ export async function getCommitDiff(
   commitish: string,
   hideWhitespaceInDiff: boolean = false
 ): Promise<IDiff> {
+  // HACK HACK HACK
+  // We sometimes end up with revisions with a leading "'" character, until
+  // we figure out why, let's just strip it off here.
+  commitish = commitish.replace(/^'/, '')
   const args = [
     'log',
     commitish,

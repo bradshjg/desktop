@@ -17,7 +17,7 @@
 export function createLogParser<T extends Record<string, string>>(fields: T) {
   const keys: Array<keyof T> = Object.keys(fields)
   const format = Object.values(fields).join('%x00')
-  const formatArgs = ['-z', `--format=${format}`]
+  const formatArgs = ['-z', `--format='${format}'`]
 
   const parse = (value: string) => {
     const records = value.split('\0')
@@ -56,7 +56,7 @@ export function createForEachRefParser<T extends Record<string, string>>(
 ) {
   const keys: Array<keyof T> = Object.keys(fields)
   const format = Object.values(fields).join('%00')
-  const formatArgs = [`--format=%00${format}%00`]
+  const formatArgs = [`--format='%00${format}%00'`]
 
   const parse = (value: string) => {
     const records = value.split('\0')

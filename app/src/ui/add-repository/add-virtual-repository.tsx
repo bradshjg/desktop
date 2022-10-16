@@ -51,7 +51,7 @@ export class AddVirtualRepository extends React.Component<
             <TextBox
               value={this.state.path}
               label='Remote path'
-              placeholder="repository path"
+              placeholder="ssh::cs::/workspaces/desktop"
               onValueChanged={this.onPathChanged}
             />
           </Row>
@@ -75,7 +75,7 @@ export class AddVirtualRepository extends React.Component<
     this.props.onDismissed()
     const { dispatcher } = this.props
 
-    const repositories = await dispatcher.addRepositories([`virtual://${this.state.path}`])
+    const repositories = await dispatcher.addRepositories([this.state.path])
 
     if (repositories.length > 0) {
       dispatcher.selectRepository(repositories[0])

@@ -11,24 +11,39 @@ This could be used when:
 * Editing code over an SSH connection
 * Using GitHub Codespaces
 
-There are some pretty strong requirements for this to work, however. The most important being this only
-implements the client side of the virtual repos, and the
-[server side](https://github.com/bradshjg/gh-desktop-virtual-repo-server) (also available as a
-[VS code extension](https://github.com/bradshjg/gh-desktop-virtual-repo-server-extension)) must be running on the
-remote server (and the port `localhost:9195` must be resolve to that remote Node process...which can be a lot).
+### Configuring a virtual repo
 
-For example, to get this working over an SSH connection we'd need:
+Currently only `ssh`-based virtual repos are supported.
 
-* A Node runtime on the remote server, and the server process running (and the build tools to build it, for now).
-* A tunnel from `localhost:9195` to that remote Node process (e.g. using an SSH tunnel)
+When adding a virtual repo, use
 
-In GitHub Codespaces, it's _slightly_ simplified:
+`ssh::<host>::<repo-path>`, e.g. `ssh::cs::/workspaces/desktop`
 
-* Install the [extension](https://github.com/bradshjg/gh-desktop-virtual-repo-server-extension) and then run
-  "GitHub Desktop: Start virtual repo server" which will launch the process and set up port forwarding.
+Where in this case `~/.ssh/config` includes
 
-The interface for adding a virtual repo is to use the path to the git repository on the remote file system. For
-example if I'm working in a GitHub Codespace it might be something like `/workspaces/my-repo`.
+```
+Host cs
+  User codespace
+  Hostname localhost
+  Port 2222
+  NoHostAuthenticationForLocalhost yes
+  StrictHostKeyChecking no
+  ControlMaster auto
+  ControlPath ~/.ssh/ssh-%r@%h:%p
+  ControlPersist 60m
+```
+
+and the git repository is at `/workspaces/desktop` on the remote host.
+
+It _must_ be the case that `ssh <host>` (`ssh cs` in this case) will log in without any need for user input, as this
+is how commands are run on the remote host. To verify your config you can use:
+
+`ssh cs echo howdy`
+
+and ensure that `howdy` is returned without a password prompt or similar.
+
+> N.B. The `ControlMaster`, `ControlPath`, `ControlPersist` sections allow multiplexing commands over
+> a single TCP connection, vastly improving the usability!
 
 ## Release Process
 

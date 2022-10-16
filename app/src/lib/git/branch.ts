@@ -159,10 +159,13 @@ export async function getMergedBranches(
   branchName: string
 ): Promise<Map<string, string>> {
   const canonicalBranchRef = formatAsLocalRef(branchName)
-  const { formatArgs, parse } = createForEachRefParser({
-    sha: '%(objectname)',
-    canonicalRef: '%(refname)',
-  })
+  const { formatArgs, parse } = createForEachRefParser(
+    repository,
+    {
+      sha: '%(objectname)',
+      canonicalRef: '%(refname)',
+    }
+  )
 
   const args = ['branch', ...formatArgs, '--merged', branchName]
   const mergedBranches = new Map<string, string>()

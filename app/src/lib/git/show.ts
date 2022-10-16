@@ -87,11 +87,6 @@ export async function getPartialBlobContents(
 
   const successExitCodes = new Set([0, 1])
 
-  // HACK HACK HACK
-  if (path.startsWith('virtual://')) {
-    path = path.replace('virtual://', '')
-  }
-
   const args = ['show', `${commitish}:${path}`]
 
   const { output } = await spawnAndComplete(

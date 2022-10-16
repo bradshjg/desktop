@@ -252,6 +252,7 @@ export class RepositoriesStore extends TypedBaseStore<
           missing: opts?.missing ?? false,
           lastStashCheckDate: null,
           alias: null,
+          isSSHRepository: path.startsWith('ssh::'),
         }
         const id = await this.db.repositories.add(dbRepo)
         return this.toRepository({ id, ...dbRepo })

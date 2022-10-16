@@ -1,9 +1,7 @@
 import { GitProcess } from 'dugite'
 import { IGitSpawnExecutionOptions } from 'dugite/build/lib/git-process'
 import * as GitPerf from '../../ui/lib/git-perf'
-import { exec as virtualExec } from '../virtual/git/core'
 import { isErrnoException } from '../errno-exception'
-import { IGitResult } from '../git/core'
 import { withTrampolineEnv } from '../trampoline/trampoline-environment'
 
 type ProcessOutput = {
@@ -62,17 +60,6 @@ export async function spawnAndComplete(
   successExitCodes?: Set<number>,
   stdOutMaxLength?: number
 ): Promise<ProcessOutput> {
-  if (path.startsWith('virtual:')) {
-    return new Promise<ProcessOutput>((resolve, _) => {
-      virtualExec(args, path, {}).then((result: IGitResult) => {
-        resolve({
-          output: Buffer.from(result.stdout),
-          error: Buffer.from(result.stderr),
-          exitCode: result.exitCode
-        })
-      })
-    })
-  }
   return new Promise<ProcessOutput>(async (resolve, reject) => {
     const process = await spawnGit(args, path, name)
 

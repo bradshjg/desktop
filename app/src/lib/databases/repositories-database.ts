@@ -65,6 +65,7 @@ export interface IDatabaseRepository {
    * of Git and GitHub.
    */
   readonly isTutorialRepository?: boolean
+  readonly isSSHRepository?: boolean
 }
 
 /**

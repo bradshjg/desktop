@@ -8,7 +8,6 @@ import {
 import { assertNever } from '../fatal-error'
 import * as GitPerf from '../../ui/lib/git-perf'
 import * as Path from 'path'
-import { exec as virtualExec } from '../virtual/git/core'
 import { isErrnoException } from '../errno-exception'
 import { ChildProcess } from 'child_process'
 import { Readable } from 'stream'
@@ -133,10 +132,6 @@ export async function git(
   name: string,
   options?: IGitExecutionOptions
 ): Promise<IGitResult> {
-  if (path.startsWith('virtual:')) {
-    return virtualExec(args, path, options)
-  }
-
   const defaultOptions: IGitExecutionOptions = {
     successExitCodes: new Set([0]),
     expectedErrors: new Set(),
@@ -465,7 +460,9 @@ export async function gitNetworkArguments(
   ]
 
   // HACK HACK HACK
-  if (repository?.path.startsWith('virtual://')) {
+  // The base args are unhelpful here, we intentionally leave it up to
+  // the remote environment to ensure that credentials are working.
+  if (repository?.isSSHRepository) {
     baseArgs = []
   }
 

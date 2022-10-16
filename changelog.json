@@ -1,5 +1,10 @@
 {
   "releases": {
+    "3.1.2-beta1-virtual": [
+      "[Improved] Virtual repos now use an SSH transport removing the need to run an HTTP server on the remote host - #7",
+      "[Fixed] Support discarding new file for virtual repos - #8",
+      "[Fixed] Support last fetch time for virtual repos - #9"
+    ],
     "3.1.2-beta1": [
       "[Added] You can preview the changes a pull request from your current branch would make - #11517",
       "[Fixed] App correctly remembers undo commit prompt setting - #15408",

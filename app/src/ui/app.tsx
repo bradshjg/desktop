@@ -64,7 +64,11 @@ import { Preferences } from './preferences'
 import { RepositorySettings } from './repository-settings'
 import { AppError } from './app-error'
 import { MissingRepository } from './missing-repository'
-import { AddExistingRepository, AddVirtualRepository, CreateRepository } from './add-repository'
+import {
+  AddExistingRepository,
+  AddVirtualRepository,
+  CreateRepository,
+} from './add-repository'
 import { CloneRepository } from './clone-repository'
 import { CreateBranch } from './create-branch'
 import { SignIn } from './sign-in'
@@ -804,7 +808,9 @@ export class App extends React.Component<IAppProps, IAppState> {
   }
 
   private showAddVirtualRepo = () => {
-    return this.props.dispatcher.showPopup({ type: PopupType.AddVirtualRepository })
+    return this.props.dispatcher.showPopup({
+      type: PopupType.AddVirtualRepository,
+    })
   }
 
   private showCreateRepository = () => {
@@ -1543,15 +1549,15 @@ export class App extends React.Component<IAppProps, IAppState> {
             path={popup.path}
           />
         )
-        case PopupType.AddVirtualRepository:
-          return (
-            <AddVirtualRepository
-              key="add-virtual-repository"
-              onDismissed={onPopupDismissedFn}
-              dispatcher={this.props.dispatcher}
-              path={popup.path}
-            />
-          )
+      case PopupType.AddVirtualRepository:
+        return (
+          <AddVirtualRepository
+            key="add-virtual-repository"
+            onDismissed={onPopupDismissedFn}
+            dispatcher={this.props.dispatcher}
+            path={popup.path}
+          />
+        )
       case PopupType.CreateRepository:
         return (
           <CreateRepository

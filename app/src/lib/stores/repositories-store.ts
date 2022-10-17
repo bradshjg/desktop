@@ -152,7 +152,7 @@ export class RepositoriesStore extends TypedBaseStore<
       repo.missing,
       repo.alias,
       repo.workflowPreferences,
-      repo.isTutorialRepository,
+      repo.isTutorialRepository
     )
   }
 

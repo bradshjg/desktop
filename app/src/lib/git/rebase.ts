@@ -263,7 +263,11 @@ export async function getRebaseSnapshot(repository: Repository): Promise<{
 async function readRebaseHead(repository: Repository): Promise<string | null> {
   try {
     const rebaseHead = Path.join(repository.path, '.git', 'REBASE_HEAD')
-    const rebaseCurrentCommitOutput = await repoReadFile(repository, rebaseHead, 'utf8')
+    const rebaseCurrentCommitOutput = await repoReadFile(
+      repository,
+      rebaseHead,
+      'utf8'
+    )
     return rebaseCurrentCommitOutput.trim()
   } catch (err) {
     log.warn(

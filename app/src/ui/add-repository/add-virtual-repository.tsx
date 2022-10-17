@@ -36,13 +36,12 @@ export class AddVirtualRepository extends React.Component<
   }
 
   public render() {
-    const disabled =
-      this.state.path.length === 0
+    const disabled = this.state.path.length === 0
 
     return (
       <Dialog
         id="add-virtual-repository"
-        title='Add virtual repository'
+        title="Add virtual repository"
         onSubmit={this.addRepository}
         onDismissed={this.props.onDismissed}
       >
@@ -50,7 +49,7 @@ export class AddVirtualRepository extends React.Component<
           <Row>
             <TextBox
               value={this.state.path}
-              label='Remote path'
+              label="Remote path"
               placeholder="ssh::cs::/workspaces/desktop"
               onValueChanged={this.onPathChanged}
             />

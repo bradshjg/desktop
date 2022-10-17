@@ -324,7 +324,12 @@ async function stash(
   message: string | null
 ): Promise<void> {
   const result = await GitProcess.exec(
-    ['stash', 'push', '-m', message || createDesktopStashMessage(repository, branchName)],
+    [
+      'stash',
+      'push',
+      '-m',
+      message || createDesktopStashMessage(repository, branchName),
+    ],
     repository.path
   )
 

@@ -1,4 +1,3 @@
-
 import { getTopLevelWorkingDirectory } from '../../git'
 
 /**
@@ -15,7 +14,6 @@ export async function validatedRepositoryPath(
   try {
     return await getTopLevelWorkingDirectory(path)
   } catch (e) {
-
     return null
   }
 }

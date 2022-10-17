@@ -1,7 +1,11 @@
 import * as FSE from 'fs-extra'
 
 import { Repository } from '../../models/repository'
-import { remotePathExists, remoteReadFile, remoteReadPartialFile } from '../virtual/fs/core'
+import {
+  remotePathExists,
+  remoteReadFile,
+  remoteReadPartialFile,
+} from '../virtual/fs/core'
 
 const sshPath = (path: string) => {
   // HACK HACK HACK the path is probably something like ssh::someHost::/path/to/file...but maybe it's /path/to/file
@@ -9,7 +13,10 @@ const sshPath = (path: string) => {
   return path.split('::').slice(-1).pop() || path
 }
 
-export const repoPathExists = (repository: Repository, path: string): Promise<boolean> => {
+export const repoPathExists = (
+  repository: Repository,
+  path: string
+): Promise<boolean> => {
   if (repository.isSSHRepository) {
     path = sshPath(path)
     return remotePathExists(repository, path)
@@ -17,7 +24,11 @@ export const repoPathExists = (repository: Repository, path: string): Promise<bo
   return FSE.pathExists(path)
 }
 
-export const repoReadFile = (repository: Repository, path: string, encoding: string = 'utf-8'): Promise<string> => {
+export const repoReadFile = (
+  repository: Repository,
+  path: string,
+  encoding: string = 'utf-8'
+): Promise<string> => {
   if (repository.isSSHRepository) {
     path = sshPath(path)
     return remoteReadFile(repository, path)
@@ -46,8 +57,7 @@ export async function repoReadPartialFile(
       remoteReadPartialFile(repository, path, start, end).then(value => {
         resolve(Buffer.from(value))
       })
-    }
-    else {
+    } else {
       const chunks = new Array<Buffer>()
       let total = 0
 
@@ -58,5 +68,6 @@ export async function repoReadPartialFile(
         })
         .on('error', reject)
         .on('end', () => resolve(Buffer.concat(chunks, total)))
-    }})
+    }
+  })
 }

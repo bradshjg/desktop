@@ -1,5 +1,9 @@
 {
   "releases": {
+    "3.1.2-beta3-virtual": [
+      "[Improved] Updated dugite to handle shell-escaping SSH commands, removing the need for test-failing hacks",
+      "[Improved] Linted the world, so like it's a bit prettier under the hood, pun intended."
+    ],
     "3.1.2-beta2-virtual": [
       "[Fixed] Git credentials will now be configured on Codespaces",
       "[Fixed] Cherry picking to new branches now _should_ work over SSH",

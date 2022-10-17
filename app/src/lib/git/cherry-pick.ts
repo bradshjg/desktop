@@ -168,10 +168,7 @@ export async function cherryPick(
   const result = await git(
     [
       'cherry-pick',
-      // HACK HACK HACK
-      // We sometimes end up with revisions with a leading "'" character, until
-      // we figure out why, let's just strip it off here.
-      ...commits.map(c => c.sha.replace(/^'/, '')),
+      ...commits.map(c => c.sha),
       '--keep-redundant-commits',
       '-m 1',
     ],

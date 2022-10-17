@@ -17,7 +17,7 @@ import { merge } from '../merge'
 import { withTrampolineEnv } from '../trampoline/trampoline-environment'
 import { Repository } from '../../models/repository'
 import { IGitAccount } from '../../models/git-account'
-import { getConfigValue, getGlobalConfigValue} from './config'
+import { getConfigValue, getGlobalConfigValue } from './config'
 import { getDotComAPIEndpoint } from '../api'
 
 /**

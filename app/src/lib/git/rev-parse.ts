@@ -117,7 +117,9 @@ export async function getRepositoryType(path: string): Promise<RepositoryType> {
         ? { kind: 'bare' }
         : {
             kind: 'regular',
-            topLevelWorkingDirectory: isSSHRepository ? path : resolve(path, cdup)
+            topLevelWorkingDirectory: isSSHRepository
+              ? path
+              : resolve(path, cdup),
           }
     }
 

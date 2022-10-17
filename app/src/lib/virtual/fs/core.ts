@@ -7,20 +7,26 @@ const remoteCommand = (path: string, command: string) => {
   return `ssh ${host} 'cd ${remotePath} && ${command}'`
 }
 
-export const remotePathExists = (repository: Repository, path: string): Promise<boolean> => {
+export const remotePathExists = (
+  repository: Repository,
+  path: string
+): Promise<boolean> => {
   const command = remoteCommand(repository.path, `test -e ${path}`)
   log.info(`Executing remotePathExists: ${command}`)
-  return new Promise((resolve) => {
-    cp.exec(command, (error) => {
+  return new Promise(resolve => {
+    cp.exec(command, error => {
       resolve(!error)
     })
   })
 }
 
-export const remoteReadFile = (repository: Repository, path: string): Promise<string> => {
+export const remoteReadFile = (
+  repository: Repository,
+  path: string
+): Promise<string> => {
   const command = remoteCommand(repository.path, `cat ${path}`)
   log.info(`Executing remoteReadFile: ${command}`)
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     cp.exec(command, (error, stdout, stderr) => {
       resolve(stdout)
     })
@@ -33,9 +39,12 @@ export const remoteReadPartialFile = (
   start: number,
   end: number
 ): Promise<string> => {
-  const command = remoteCommand(repository.path, `cat ${path} | tail -c +${start} | head -c ${end - start}`)
+  const command = remoteCommand(
+    repository.path,
+    `cat ${path} | tail -c +${start} | head -c ${end - start}`
+  )
   log.info(`Executing remoteReadPartialFile: ${command}`)
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     cp.exec(command, (error, stdout, stderr) => {
       resolve(stdout)
     })
@@ -44,12 +53,12 @@ export const remoteReadPartialFile = (
 
 export const remoteDeletePath = (
   repository: Repository,
-  path: string,
+  path: string
 ): Promise<string> => {
   // This feels dangerous...but these environments are ephemeral right?...better not run this locally though!
   const command = remoteCommand(repository.path, `rm -rf ${path}`)
   log.info(`Executing remoteDeletePath: ${command}`)
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     cp.exec(command, (error, stdout, stderr) => {
       resolve(stdout)
     })
@@ -57,12 +66,15 @@ export const remoteDeletePath = (
 }
 
 export const remoteLastFetched = (
-  repository: Repository,
-): Promise<Date|null> => {
+  repository: Repository
+): Promise<Date | null> => {
   // This feels dangerous...but these environments are ephemeral right?...better not run this locally though!
-  const command = remoteCommand(repository.path, `stat --format='%s:%Y' .git/FETCH_HEAD`)
+  const command = remoteCommand(
+    repository.path,
+    `stat --format='%s:%Y' .git/FETCH_HEAD`
+  )
   log.info(`Executing remoteDeletePath: ${command}`)
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     cp.exec(command, (error, stdout, stderr) => {
       const [raw_size, raw_mtime] = stdout.split(':')
       if (raw_size === '0') {

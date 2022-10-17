@@ -86,12 +86,7 @@ export async function deleteRemoteBranch(
     })) || getFallbackUrlForProxyResolve(account, repository)
 
   const networkArgs = await gitNetworkArguments(repository, account)
-  const args = [
-    ...networkArgs,
-    'push',
-    remoteName,
-    `:${remoteBranchName}`,
-  ]
+  const args = [...networkArgs, 'push', remoteName, `:${remoteBranchName}`]
 
   // If the user is not authenticated, the push is going to fail
   // Let this propagate and leave it to the caller to handle
@@ -126,7 +121,7 @@ export async function getBranchesPointedAt(
   const args = [
     'branch',
     `--points-at=${commitish}`,
-    '--format=\'%(refname:short)\'',
+    '--format=%(refname:short)',
   ]
   // this command has an implicit \n delimiter
   const { stdout, exitCode } = await git(
@@ -159,13 +154,10 @@ export async function getMergedBranches(
   branchName: string
 ): Promise<Map<string, string>> {
   const canonicalBranchRef = formatAsLocalRef(branchName)
-  const { formatArgs, parse } = createForEachRefParser(
-    repository,
-    {
-      sha: '%(objectname)',
-      canonicalRef: '%(refname)',
-    }
-  )
+  const { formatArgs, parse } = createForEachRefParser({
+    sha: '%(objectname)',
+    canonicalRef: '%(refname)',
+  })
 
   const args = ['branch', ...formatArgs, '--merged', branchName]
   const mergedBranches = new Map<string, string>()

@@ -15,17 +15,14 @@ export async function getBranches(
   repository: Repository,
   ...prefixes: string[]
 ): Promise<ReadonlyArray<Branch>> {
-  const { formatArgs, parse } = createForEachRefParser(
-    repository,
-    {
-      fullName: '%(refname)',
-      shortName: '%(refname:short)',
-      upstreamShortName: '%(upstream:short)',
-      sha: '%(objectname)',
-      author: '%(author)',
-      symRef: '%(symref)',
-    }
-  )
+  const { formatArgs, parse } = createForEachRefParser({
+    fullName: '%(refname)',
+    shortName: '%(refname:short)',
+    upstreamShortName: '%(upstream:short)',
+    sha: '%(objectname)',
+    author: '%(author)',
+    symRef: '%(symref)',
+  })
 
   if (!prefixes || !prefixes.length) {
     prefixes = ['refs/heads', 'refs/remotes']
@@ -80,16 +77,13 @@ export async function getBranches(
 export async function getBranchesDifferingFromUpstream(
   repository: Repository
 ): Promise<ReadonlyArray<ITrackingBranch>> {
-  const { formatArgs, parse } = createForEachRefParser(
-    repository,
-    {
-      fullName: '%(refname)',
-      sha: '%(objectname)', // SHA
-      upstream: '%(upstream)',
-      symref: '%(symref)',
-      head: '%(HEAD)',
-    }
-  )
+  const { formatArgs, parse } = createForEachRefParser({
+    fullName: '%(refname)',
+    sha: '%(objectname)', // SHA
+    upstream: '%(upstream)',
+    symref: '%(symref)',
+    head: '%(HEAD)',
+  })
 
   const prefixes = ['refs/heads', 'refs/remotes']
 

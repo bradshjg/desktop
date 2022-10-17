@@ -149,12 +149,10 @@ describe('git/stash', () => {
   })
 
   describe('createDesktopStashMessage', () => {
-    let repository: Repository
-
     it('creates message that matches Desktop stash entry format', () => {
       const branchName = 'master'
 
-      const message = createDesktopStashMessage(repository, branchName)
+      const message = createDesktopStashMessage(branchName)
 
       expect(message).toBe('!!GitHub_Desktop<master>')
     })
@@ -328,7 +326,7 @@ async function stash(
       'stash',
       'push',
       '-m',
-      message || createDesktopStashMessage(repository, branchName),
+      message || createDesktopStashMessage(branchName),
     ],
     repository.path
   )

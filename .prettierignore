@@ -11,5 +11,6 @@ yarn-error.log
 app/coverage
 app/static/common
 app/test/fixtures
+script/coverage
 gemoji
 *.md

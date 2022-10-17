@@ -387,8 +387,9 @@ dompurify@^2.3.3:
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-2.3.3.tgz#c1af3eb88be47324432964d8abc75cf4b98d634c"
   integrity sha512-dqnqRkPMAjOZE0FogZ+ceJNM2dZ3V/yNOuFB7+39qpO93hHhfRpHw3heYQC7DPK9FqbQTfBKUJhiSfz4MvXYwg==
 
-"dugite@file:../../dugite":
+dugite@bradshjg/dugite#shh-exec-beta1:
   version "2.0.0"
+  resolved "https://codeload.github.com/bradshjg/dugite/tar.gz/a2277266c179a26b30cb2ba2ee173553043d2138"
   dependencies:
     progress "^2.0.3"
     tar "^6.1.11"

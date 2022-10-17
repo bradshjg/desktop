@@ -16,7 +16,6 @@ export async function getBranches(
   ...prefixes: string[]
 ): Promise<ReadonlyArray<Branch>> {
   const { formatArgs, parse } = createForEachRefParser(
-    repository,
     {
       fullName: '%(refname)',
       shortName: '%(refname:short)',
@@ -81,7 +80,6 @@ export async function getBranchesDifferingFromUpstream(
   repository: Repository
 ): Promise<ReadonlyArray<ITrackingBranch>> {
   const { formatArgs, parse } = createForEachRefParser(
-    repository,
     {
       fullName: '%(refname)',
       sha: '%(objectname)', // SHA

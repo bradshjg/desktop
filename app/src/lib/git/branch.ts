@@ -126,7 +126,7 @@ export async function getBranchesPointedAt(
   const args = [
     'branch',
     `--points-at=${commitish}`,
-    '--format=\'%(refname:short)\'',
+    '--format=%(refname:short)',
   ]
   // this command has an implicit \n delimiter
   const { stdout, exitCode } = await git(
@@ -160,7 +160,6 @@ export async function getMergedBranches(
 ): Promise<Map<string, string>> {
   const canonicalBranchRef = formatAsLocalRef(branchName)
   const { formatArgs, parse } = createForEachRefParser(
-    repository,
     {
       sha: '%(objectname)',
       canonicalRef: '%(refname)',

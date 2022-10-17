@@ -202,11 +202,6 @@ export async function getChangedFiles(
   repository: Repository,
   sha: string
 ): Promise<IChangesetData> {
-  // HACK HACK HACK
-  // We sometimes end up with revisions with a leading "'" character, until
-  // we figure out why, let's just strip it off here.
-  sha = sha.replace(/^'/, '')
-
   // opt-in for rename detection (-M) and copies detection (-C)
   // this is equivalent to the user configuring 'diff.renames' to 'copies'
   // NOTE: order here matters - doing -M before -C means copies aren't detected

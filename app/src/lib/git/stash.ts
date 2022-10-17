@@ -109,11 +109,7 @@ export async function getLastDesktopStashEntryForBranch(
 
 /** Creates a stash entry message that indicates the entry was created by Desktop */
 export function createDesktopStashMessage(repository: Repository, branchName: string) {
-  if (repository.isSSHRepository) {
-    return `'${DesktopStashEntryMarker}<${branchName}>'`
-  } else {
-    return `${DesktopStashEntryMarker}<${branchName}>`
-  }
+  return `${DesktopStashEntryMarker}<${branchName}>`
 }
 
 /**
